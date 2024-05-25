@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "474959161797",
+    "project_id": "edu-pfe",
+    "storage_bucket": "edu-pfe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474959161797:android:cf56f269fdec0da587c3ac",
+        "android_client_info": {
+          "package_name": "com.example.edupinacle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBA2aL2i994qp62iNGIqENPUCF3_F4NFGk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
