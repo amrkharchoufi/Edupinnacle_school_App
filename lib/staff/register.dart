@@ -1,11 +1,10 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/mywidgets/registercard.dart';
 import 'package:edupinacle/staff/register/addprof.dart';
 import 'package:edupinacle/staff/register/addstaff.dart';
 import 'package:edupinacle/staff/register/addstd.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Register extends StatefulWidget {
@@ -17,8 +16,8 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
-    Manage(),
-    Madd(),
+    const Manage(),
+    const Madd(),
   ];
   void _onItemTapped(int index) {
     setState(() {
@@ -30,7 +29,7 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Registration",
           style: TextStyle(color: Colors.white),
         ),
@@ -93,23 +92,24 @@ class _ManageState extends State<Manage> {
       body: SingleChildScrollView(
         child: Container(
           width: double.infinity,
-          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 "Registered Users :",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               if (!isDataLoaded) // Display loading indicator if data is not loaded
-                CircularProgressIndicator()
+                const Center(child: const CircularProgressIndicator())
               else if (data.isEmpty) // Display message only if data is empty
-                Text("No registered users found")
+                const Text("No registered users found")
               else
                 for (int i = 0; i < data.length; i++)
                   Regcard(
-                    name: data[i]['ID'],
+                    
+                    id: data[i]['ID'],
                     delete: () {
                       AwesomeDialog(
                         context: context,
@@ -117,13 +117,31 @@ class _ManageState extends State<Manage> {
                         animType: AnimType.rightSlide,
                         title: 'delete user',
                         desc: 'you sure you want to delet the user ?',
+                        btnCancelOnPress: () {},
                         btnOkOnPress: () async {
                           try {
                             await FirebaseFirestore.instance
-                                .collection('your_collection')
+                                .collection('etudiant')
                                 .doc(data[i]['ID'])
                                 .delete();
-                            Navigator.pop(context);
+                            QuerySnapshot userSnapshot = await FirebaseFirestore
+                                .instance
+                                .collection('users')
+                                .where('ID', isEqualTo: data[i]['ID'])
+                                .get();
+
+                            // Check if any documents match the query
+                            if (userSnapshot.docs.isNotEmpty) {
+                              for (QueryDocumentSnapshot doc
+                                  in userSnapshot.docs) {
+                                await FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(doc.id)
+                                    .delete();
+                              }
+                            }
+                            final user = FirebaseAuth.instance;
+
                             AwesomeDialog(
                               context: context,
                               dialogType: DialogType.success,
@@ -132,16 +150,20 @@ class _ManageState extends State<Manage> {
                               desc: 'User successfully deleted.',
                               btnOkOnPress: () {},
                             ).show();
+                            setState(() {
+                            });
                           } catch (e) {
                             print('Error deleting document: $e');
                           }
                         },
                       ).show();
                     }, // Adjust as necessary
-                    manage: () {
-                      
-                    }, // Adjust as necessary
+                    manage: () {}, 
+                     // Adjust as necessary
                   ),
+              const SizedBox(
+                height: 5,
+              )
             ],
           ),
         ),
@@ -157,7 +179,7 @@ class Madd extends StatefulWidget {
 }
 
 class _MaddState extends State<Madd> {
-  Widget selectedUserType = MaddStd();
+  Widget selectedUserType = const MaddStd();
   void _selectUserType(Widget userType) {
     setState(() {
       selectedUserType = userType;
@@ -169,7 +191,7 @@ class _MaddState extends State<Madd> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Users',
           style: TextStyle(color: Colors.white),
         ),
@@ -179,9 +201,9 @@ class _MaddState extends State<Madd> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 83, 80, 80),
+                color: Color.fromARGB(255, 83, 80, 80),
               ),
               child: Text(
                 'Select User Type',
@@ -192,19 +214,19 @@ class _MaddState extends State<Madd> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.school),
-              title: Text('Student'),
-              onTap: () => _selectUserType(MaddStd()),
+              leading: const Icon(Icons.school),
+              title: const Text('Student'),
+              onTap: () => _selectUserType(const MaddStd()),
             ),
             ListTile(
-              leading: Icon(Icons.admin_panel_settings),
-              title: Text('Admin'),
-              onTap: () => _selectUserType(MaddStf()),
+              leading: const Icon(Icons.admin_panel_settings),
+              title: const Text('Admin'),
+              onTap: () => _selectUserType(const MaddStf()),
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Professor'),
-              onTap: () => _selectUserType(MaddPrf()),
+              leading: const Icon(Icons.person),
+              title: const Text('Professor'),
+              onTap: () => _selectUserType(const MaddPrf()),
             ),
           ],
         ),

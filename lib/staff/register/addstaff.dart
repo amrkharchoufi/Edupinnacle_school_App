@@ -21,8 +21,8 @@ class _MaddStfState extends State<MaddStf> {
   TextEditingController date = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController pwd = TextEditingController();
-  Future<void> inscription(String nom, String prenom, String cin,String date, String phone,
-      String adresse, String email, String pwd) async {
+  Future<void> inscription(String nom, String prenom, String cin, String date,
+      String phone, String adresse, String email, String pwd) async {
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -151,7 +151,7 @@ class _MaddStfState extends State<MaddStf> {
                             const SizedBox(
                               height: 10,
                             ),
-                              Myinput(
+                            Myinput(
                               label: "Password",
                               preficon: const Icon(
                                 Icons.lock,
@@ -230,6 +230,14 @@ class _MaddStfState extends State<MaddStf> {
                                         adresse.text,
                                         email.text,
                                         pwd.text);
+                                    name.clear();
+                                    prenom.clear();
+                                    date.clear();
+                                    telephone.clear();
+                                    adresse.clear();
+                                    email.clear();
+                                    pwd.clear();
+                                    cin.clear();
                                   }
                                 },
                                 style: ButtonStyle(

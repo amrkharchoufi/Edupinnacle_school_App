@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class Regcard extends StatelessWidget {
-  final String id;
+class Classcard extends StatelessWidget {
+  final String name;
+  final int numberetu;
+  final int maxnumber;
   final Function? delete;
   final Function? manage;
-   Regcard(
+  const Classcard(
       {super.key,
-      required this.id,
+      required this.name,
       required this.delete,
-      required this.manage});
+      required this.manage,
+      required this.numberetu,
+      required this.maxnumber,
+      });
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -29,20 +34,37 @@ class Regcard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const FaIcon(FontAwesomeIcons.graduationCap),
+                    Row(
+                      children: [
+                        const FaIcon(FontAwesomeIcons.graduationCap),
+                        const SizedBox(
+                          width: 7,
+                        ),
+                        Text(
+                          name,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "myfont1"),
+                        ),
+                      ],
+                    ),
                     const SizedBox(
-                      width: 7,
+                      height: 10,
+                    ),
+                     Text(
+                      "nombre d'etudiant : $numberetu",
+                      style: const TextStyle(color: Colors.white),
                     ),
                     Text(
-                      id,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "myfont1"),
-                    ),
+                      "max number : $maxnumber",
+                      style: const TextStyle(color: Colors.white),
+                    )
                   ],
                 ),
                 Column(
@@ -52,9 +74,7 @@ class Regcard extends StatelessWidget {
                       child: Container(
                         width: 50,
                         height: 50,
-                        decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(5)),
+                        decoration:  BoxDecoration(color: Colors.blue,borderRadius: BorderRadius.circular(5)),
                         child: const Icon(
                           Icons.settings,
                           color: Colors.white,
@@ -70,9 +90,7 @@ class Regcard extends StatelessWidget {
                       child: Container(
                         width: 50,
                         height: 50,
-                        decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(5)),
+                        decoration:  BoxDecoration(color: Colors.red,borderRadius: BorderRadius.circular(5)),
                         child: const Icon(
                           Icons.delete,
                           color: Colors.white,

@@ -43,6 +43,7 @@ dependencies:
   firebase_storage: ^11.7.5
   firebase_messaging: ^14.9.2
   awesome_dialog: ^3.2.1
+  font_awesome_flutter: ^10.7.0
 
 
 dev_dependencies:

@@ -62,6 +62,7 @@ class _MaddStdState extends State<MaddStd> {
         'nom pere': fname,
         'cin  pere': fcin,
         'num pere': phone,
+        'class' : '',
         // Add more fields as needed
       });
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
@@ -258,6 +259,15 @@ class _MaddStdState extends State<MaddStd> {
                                         fcin.text,
                                         email.text,
                                         pwd.text);
+                                    name.clear();
+                                    prenom.clear();
+                                    date.clear();
+                                    telephone.clear();
+                                    adresse.clear();
+                                    fname.clear();
+                                    fcin.clear();
+                                    email.clear();
+                                    pwd.clear();
                                   }
                                 },
                                 style: ButtonStyle(

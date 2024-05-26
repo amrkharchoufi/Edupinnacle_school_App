@@ -2,6 +2,7 @@ import 'package:edupinacle/pages/inscription.dart';
 import 'package:edupinacle/prof/account.dart';
 import 'package:edupinacle/prof/courses.dart';
 import 'package:edupinacle/prof/planning.dart';
+import 'package:edupinacle/staff/addclass.dart';
 import 'package:edupinacle/staff/register.dart';
 import 'package:edupinacle/staff/admin.dart';
 import 'package:edupinacle/staff/staffaccount.dart';
@@ -49,4 +50,6 @@ final Map<String, WidgetBuilder> routes = {
   '/Registration' : (context) => const Register(),
   '/stfaccount' : (context) => const SFAccount(),
   '/Admin' : (context) => const Administration(),
+  '/classadd' : (context) => const Addclass(),
+
 };

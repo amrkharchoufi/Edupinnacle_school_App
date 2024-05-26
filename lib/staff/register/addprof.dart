@@ -21,15 +21,8 @@ class _MaddPrfState extends State<MaddPrf> {
   TextEditingController date = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController pwd = TextEditingController();
-  Future<void> inscription(
-      String nom,
-      String prenom,
-      String cin,
-      String date,
-      String phone,
-      String adresse,
-      String email,
-      String pwd) async {
+  Future<void> inscription(String nom, String prenom, String cin, String date,
+      String phone, String adresse, String email, String pwd) async {
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -60,12 +53,12 @@ class _MaddPrfState extends State<MaddPrf> {
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'etat': 'inscrit',
       });
-       AwesomeDialog(
+      AwesomeDialog(
         context: context,
         dialogType: DialogType.success,
         animType: AnimType.rightSlide,
         title: 'Registration done',
-        desc: 'User added with succes !' ,
+        desc: 'User added with succes !',
         btnOkOnPress: () {},
       ).show();
     } catch (e) {
@@ -228,7 +221,7 @@ class _MaddPrfState extends State<MaddPrf> {
                               child: ElevatedButton(
                                 onPressed: () async {
                                   if (myform.currentState!.validate()) {
-                                      inscription(
+                                    inscription(
                                         name.text,
                                         prenom.text,
                                         cin.text,
@@ -237,6 +230,14 @@ class _MaddPrfState extends State<MaddPrf> {
                                         adresse.text,
                                         email.text,
                                         pwd.text);
+                                    name.clear();
+                                    prenom.clear();
+                                    date.clear();
+                                    telephone.clear();
+                                    adresse.clear();
+                                    email.clear();
+                                    pwd.clear();
+                                    cin.clear();
                                   }
                                 },
                                 style: ButtonStyle(
