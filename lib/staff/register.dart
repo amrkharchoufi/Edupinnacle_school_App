@@ -75,6 +75,7 @@ class _ManageState extends State<Manage> {
         await users.where("role", isEqualTo: "etudiant").get();
 
     setState(() {
+      data.clear();
       data.addAll(query.docs);
       isDataLoaded = true;
     });
@@ -108,7 +109,6 @@ class _ManageState extends State<Manage> {
               else
                 for (int i = 0; i < data.length; i++)
                   Regcard(
-                    
                     id: data[i]['ID'],
                     delete: () {
                       AwesomeDialog(
@@ -150,16 +150,15 @@ class _ManageState extends State<Manage> {
                               desc: 'User successfully deleted.',
                               btnOkOnPress: () {},
                             ).show();
-                            setState(() {
-                            });
+                            setState(() {});
                           } catch (e) {
                             print('Error deleting document: $e');
                           }
                         },
                       ).show();
                     }, // Adjust as necessary
-                    manage: () {}, 
-                     // Adjust as necessary
+                    manage: () {},
+                    // Adjust as necessary
                   ),
               const SizedBox(
                 height: 5,

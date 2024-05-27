@@ -48,7 +48,7 @@ class _MaddStfState extends State<MaddStf> {
         'cin': cin,
         'date naisance': date,
         'adresse': adresse,
-        'pere': phone,
+        'telephone': phone,
       });
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'etat': 'inscrit',
@@ -159,7 +159,7 @@ class _MaddStfState extends State<MaddStf> {
                               ),
                               obscure: false,
                               mycontrol: pwd,
-                              type: TextInputType.datetime,
+                              type: TextInputType.text,
                             ),
                             const SizedBox(
                               height: 10,
@@ -198,7 +198,7 @@ class _MaddStfState extends State<MaddStf> {
                               ),
                               obscure: false,
                               mycontrol: adresse,
-                              type: TextInputType.datetime,
+                              type: TextInputType.text,
                             ),
                             const SizedBox(
                               height: 10,

@@ -290,7 +290,19 @@ class _GemploiState extends State<Gemploi> {
     'Friday': [],
     'Saturday': [],
   };
-  void getdata() async {
+
+  final Map<String, TextEditingController> _startTimeControllers = {};
+  final Map<String, TextEditingController> _endTimeControllers = {};
+  final Map<String, TextEditingController> _activityControllers = {};
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getdata();
+  }
+
+  Future<void> getdata() async {
     try {
       DocumentSnapshot doc = await FirebaseFirestore.instance
           .collection('schedule')
@@ -312,33 +324,22 @@ class _GemploiState extends State<Gemploi> {
         });
         setState(() {
           schedule = fetchedSchedule;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
         });
       }
     } catch (e) {
       print('Error fetching schedule: $e');
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
-  @override
-  void initState() {
-    getdata();
-    super.initState();
-  }
-
-  final Map<String, TextEditingController> _startTimeControllers = {};
-  final Map<String, TextEditingController> _endTimeControllers = {};
-  final Map<String, TextEditingController> _activityControllers = {};
-
-  @override
-  void dispose() {
-    // Dispose of all controllers when the widget is disposed
-    _startTimeControllers.values.forEach((controller) => controller.dispose());
-    _endTimeControllers.values.forEach((controller) => controller.dispose());
-    _activityControllers.values.forEach((controller) => controller.dispose());
-    super.dispose();
-  }
-
-  void addTimeSlot(String day) async {
+  Future<void> addTimeSlot(String day) async {
     String startTime = _startTimeControllers[day]!.text;
     String endTime = _endTimeControllers[day]!.text;
     String activity = _activityControllers[day]!.text;
@@ -361,97 +362,107 @@ class _GemploiState extends State<Gemploi> {
     }
   }
 
-  void deleteTimeSlot(String day, int index) {
-    setState(() async {
+  Future<void> deleteTimeSlot(String day, int index) async {
+    setState(() {
       schedule[day]!.removeAt(index);
-      await FirebaseFirestore.instance
-          .collection('schedule')
-          .doc(widget.id)
-          .update({'schedule': schedule});
     });
+    await FirebaseFirestore.instance
+        .collection('schedule')
+        .doc(widget.id)
+        .update({'schedule': schedule});
+  }
+
+  @override
+  void dispose() {
+    _startTimeControllers.values.forEach((controller) => controller.dispose());
+    _endTimeControllers.values.forEach((controller) => controller.dispose());
+    _activityControllers.values.forEach((controller) => controller.dispose());
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        margin: const EdgeInsets.all(5),
-        child: ListView.builder(
-          itemCount: schedule.length,
-          itemBuilder: (context, index) {
-            String day = schedule.keys.elementAt(index);
-            // Initialize controllers for each day if they are not already initialized
-            _startTimeControllers[day] ??= TextEditingController();
-            _endTimeControllers[day] ??= TextEditingController();
-            _activityControllers[day] ??= TextEditingController();
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Container(
+              margin: const EdgeInsets.all(5),
+              child: ListView.builder(
+                itemCount: schedule.length,
+                itemBuilder: (context, index) {
+                  String day = schedule.keys.elementAt(index);
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  day,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: schedule[day]!.length,
-                  itemBuilder: (context, idx) {
-                    Map<String, String> timeSlot = schedule[day]![idx];
-                    return ListTile(
-                      title: Text(
-                          '${timeSlot['startTime']} - ${timeSlot['endTime']}'),
-                      subtitle: Text(timeSlot['activity']!),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => deleteTimeSlot(day, idx),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
+                  _startTimeControllers[day] ??= TextEditingController();
+                  _endTimeControllers[day] ??= TextEditingController();
+                  _activityControllers[day] ??= TextEditingController();
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _startTimeControllers[day],
-                          decoration:
-                              const InputDecoration(labelText: 'Start Time'),
+                      Text(
+                        day,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: schedule[day]!.length,
+                        itemBuilder: (context, idx) {
+                          Map<String, String> timeSlot = schedule[day]![idx];
+                          return ListTile(
+                            title: Text(
+                                '${timeSlot['startTime']} - ${timeSlot['endTime']}'),
+                            subtitle: Text(timeSlot['activity']!),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => deleteTimeSlot(day, idx),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _startTimeControllers[day],
+                                decoration: const InputDecoration(
+                                    labelText: 'Start Time'),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextField(
+                                controller: _endTimeControllers[day],
+                                decoration: const InputDecoration(
+                                    labelText: 'End Time'),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextField(
+                                controller: _activityControllers[day],
+                                decoration: const InputDecoration(
+                                    labelText: 'Activity'),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            ElevatedButton(
+                              onPressed: () => addTimeSlot(day),
+                              child: const Text('Add'),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextField(
-                          controller: _endTimeControllers[day],
-                          decoration:
-                              const InputDecoration(labelText: 'End Time'),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextField(
-                          controller: _activityControllers[day],
-                          decoration:
-                              const InputDecoration(labelText: 'Activity'),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      ElevatedButton(
-                        onPressed: () => addTimeSlot(day),
-                        child: const Text('Add'),
-                      ),
+                      const SizedBox(height: 20),
                     ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            );
-          },
-        ),
-      ),
+                  );
+                },
+              ),
+            ),
     );
   }
 }

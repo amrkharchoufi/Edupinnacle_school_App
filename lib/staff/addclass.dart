@@ -31,7 +31,14 @@ class _AddclassState extends State<Addclass> {
   TextEditingController id = TextEditingController();
   GlobalKey<FormState> k = GlobalKey();
   void Addclass(String id, int num) async {
-    Map<String, List<Map<String, String>>> schedule = {};
+  Map<String, List<Map<String, String>>> schedule = {
+    'Monday': [],
+    'Tuesday': [],
+    'Wednesday': [],
+    'Thursday': [],
+    'Friday': [],
+    'Saturday': [],
+  };
     bool exist = await checkDocumentExists(id);
     if (!exist) {
       await FirebaseFirestore.instance

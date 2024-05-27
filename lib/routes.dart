@@ -23,7 +23,7 @@ import 'package:edupinacle/prof/profhome.dart';
 
 // Define routes using a Map
 final Map<String, WidgetBuilder> routes = {
-  '/': (context) =>  const Staffhome(),
+  '/': (context) =>  const Homepage(),
   // For homepage and Login 
   '/homepage': (context) => const Homepage(),
   '/welcome': (context) => const Welcome(),

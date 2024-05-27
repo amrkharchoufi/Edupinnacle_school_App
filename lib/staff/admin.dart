@@ -258,7 +258,7 @@ class _GmoduleState extends State<Gmodule> {
                         btnOkOnPress: () async {
                           try {
                             await FirebaseFirestore.instance
-                                .collection('subject')
+                                .collection('module')
                                 .doc(data[i].id)
                                 .delete();
                             getdata();
