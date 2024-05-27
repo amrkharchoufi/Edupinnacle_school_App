@@ -171,3 +171,67 @@ class Reg2card extends StatelessWidget {
     );
   }
 }
+class Classmoduleaddcard extends StatelessWidget {
+  final String id;
+  final Function? add;
+  final Function? manage;
+   Classmoduleaddcard(
+      {super.key,
+      required this.id,
+      required this.add,
+      required this.manage});
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+          elevation: 5,
+          color: Colors.grey,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(
+              color: Colors.blueGrey, // Border color
+              width: 1, // Border width
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const FaIcon(FontAwesomeIcons.school),
+                    const SizedBox(
+                      width:10,
+                    ),
+                    Text(
+                      id,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "myfont1"),
+                    ),
+                  ],
+                ),
+                MaterialButton(
+                  onPressed: add != null ? () => add!() : null,
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(5)),
+                    child: const Icon(
+                      Icons.add,
+                      color: Colors.white,size: 50,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )),
+    );
+  }
+}

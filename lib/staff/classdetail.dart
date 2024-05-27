@@ -166,11 +166,6 @@ class _StudentsState extends State<Students> {
                       ).show();
                     }, // Adjust as necessary
                     manage: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  Classdetail(id: data[i]['ID'])));
                     }, // Adjust as necessary
                   ),
               const SizedBox(

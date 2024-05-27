@@ -198,7 +198,7 @@ class _MaddPrfState extends State<MaddPrf> {
                               ),
                               obscure: false,
                               mycontrol: adresse,
-                              type: TextInputType.datetime,
+                              type: TextInputType.text,
                             ),
                             const SizedBox(
                               height: 10,

@@ -40,7 +40,7 @@ class Classcard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const FaIcon(FontAwesomeIcons.graduationCap),
+                        const FaIcon(FontAwesomeIcons.school),
                         const SizedBox(
                           width: 7,
                         ),
