@@ -50,9 +50,6 @@ class _MaddStfState extends State<MaddStf> {
         'adresse': adresse,
         'telephone': phone,
       });
-      await FirebaseFirestore.instance.collection('users').doc(uid).update({
-        'etat': 'inscrit',
-      });
       AwesomeDialog(
         context: context,
         dialogType: DialogType.success,

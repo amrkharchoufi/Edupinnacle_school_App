@@ -1,9 +1,9 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/mywidgets/registercard.dart';
-import 'package:edupinacle/staff/register/addprof.dart';
-import 'package:edupinacle/staff/register/addstaff.dart';
-import 'package:edupinacle/staff/register/addstd.dart';
+import 'package:edupinacle/staff/register/add%20register/addprof.dart';
+import 'package:edupinacle/staff/register/add%20register/addstaff.dart';
+import 'package:edupinacle/staff/register/add%20register/addstd.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -129,7 +129,6 @@ class _ManageState extends State<Manage> {
                                 .collection('users')
                                 .where('ID', isEqualTo: data[i]['ID'])
                                 .get();
-
                             // Check if any documents match the query
                             if (userSnapshot.docs.isNotEmpty) {
                               for (QueryDocumentSnapshot doc
@@ -140,8 +139,7 @@ class _ManageState extends State<Manage> {
                                     .delete();
                               }
                             }
-                            final user = FirebaseAuth.instance;
-
+                            getdata();
                             AwesomeDialog(
                               context: context,
                               dialogType: DialogType.success,

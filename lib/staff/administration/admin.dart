@@ -2,8 +2,8 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/mywidgets/calsscard.dart';
 import 'package:edupinacle/mywidgets/registercard.dart';
-import 'package:edupinacle/staff/classdetail.dart';
-import 'package:edupinacle/staff/moduledet.dart';
+import 'package:edupinacle/staff/administration/class/classdetail.dart';
+import 'package:edupinacle/staff/administration/module/moduledet.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -138,6 +138,10 @@ class _GclassState extends State<Gclass> {
                                 .doc(data[i].id)
                                 .delete();
                             getdata();
+                            await FirebaseFirestore.instance
+                                .collection('schedule')
+                                .doc(data[i].id)
+                                .delete();
                             QuerySnapshot query = await FirebaseFirestore
                                 .instance
                                 .collection('etudiant')

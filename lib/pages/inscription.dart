@@ -58,7 +58,7 @@ class _InscriptionState extends State<Inscription> {
         'nom pere': fname,
         'cin  pere': fcin,
         'num pere': phone,
-        // Add more fields as needed
+        'class' : ''
       });
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'etat': 'inscrit',

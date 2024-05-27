@@ -227,7 +227,7 @@ class _StdaddState extends State<Stdadd> {
               if (!isDataLoaded) // Display loading indicator if data is not loaded
                 const CircularProgressIndicator()
               else if (data.isEmpty) // Display message only if data is empty
-                const Text("No students found")
+                const Center(child: Text("No students found !"))
               else
                 for (int i = 0; i < data.length; i++)
                   Reg2card(
@@ -295,6 +295,15 @@ class _GemploiState extends State<Gemploi> {
   final Map<String, TextEditingController> _endTimeControllers = {};
   final Map<String, TextEditingController> _activityControllers = {};
   bool _isLoading = true;
+
+  final List<String> _dayOrder = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
 
   @override
   void initState() {
@@ -388,9 +397,9 @@ class _GemploiState extends State<Gemploi> {
           : Container(
               margin: const EdgeInsets.all(5),
               child: ListView.builder(
-                itemCount: schedule.length,
+                itemCount: _dayOrder.length,
                 itemBuilder: (context, index) {
-                  String day = schedule.keys.elementAt(index);
+                  String day = _dayOrder[index];
 
                   _startTimeControllers[day] ??= TextEditingController();
                   _endTimeControllers[day] ??= TextEditingController();
@@ -407,7 +416,7 @@ class _GemploiState extends State<Gemploi> {
                       ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: schedule[day]!.length,
+                        itemCount: schedule[day]?.length ?? 0,
                         itemBuilder: (context, idx) {
                           Map<String, String> timeSlot = schedule[day]![idx];
                           return ListTile(

@@ -48,10 +48,7 @@ class _MaddPrfState extends State<MaddPrf> {
         'cin': cin,
         'date naisance': date,
         'adresse': adresse,
-        'pere': phone,
-      });
-      await FirebaseFirestore.instance.collection('users').doc(uid).update({
-        'etat': 'inscrit',
+        'telephone': phone,
       });
       AwesomeDialog(
         context: context,

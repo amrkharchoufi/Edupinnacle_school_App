@@ -273,6 +273,28 @@ class _ModuleclassState extends State<Moduleclass> {
                                 'IDmodule': widget.id,
                                 'IDprof': id.text
                               });
+                              QuerySnapshot query = await FirebaseFirestore
+                                  .instance
+                                  .collection('etudiant')
+                                  .where('class', isEqualTo: data[i].id)
+                                  .get();
+                              WriteBatch batch =
+                                  FirebaseFirestore.instance.batch();
+                              // Update each student's class field to an empty string
+                              for (var doc in query.docs) {
+                                Map<String, dynamic> newModuleData = {
+                                  'idetudiant': doc.id,
+                                  'idmodule': widget.id,
+                                  'note1': 0,
+                                  'note2': 0,
+                                  'final': 0,
+                                  // Add other fields as needed
+                                };
+                                DocumentReference newDocRef = FirebaseFirestore.instance.collection('etudiant_module').doc('${doc.id}_${widget.id}');
+                                batch.set(newDocRef, newModuleData);
+                              }
+                              // Commit the batch
+                              await batch.commit();
                               getdata();
                             } catch (e) {
                               print('Error adding student : $e');
