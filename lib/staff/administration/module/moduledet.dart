@@ -56,7 +56,7 @@ class _ModuledetState extends State<Moduledet> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.school),
-            label: 'Students',
+            label: 'classes',
           ),
           BottomNavigationBarItem(
             icon: Icon(
@@ -85,7 +85,8 @@ class EnrolClass extends StatefulWidget {
 class _EnrolClassState extends State<EnrolClass> {
   List<QueryDocumentSnapshot> data = [];
   bool isDataLoaded = false;
-  void getdata() async {
+
+  Future<void> getdata() async {
     final student = FirebaseFirestore.instance.collection('class_module');
     QuerySnapshot query =
         await student.where("IDmodule", isEqualTo: widget.id).get();
@@ -99,8 +100,8 @@ class _EnrolClassState extends State<EnrolClass> {
 
   @override
   void initState() {
-    getdata();
     super.initState();
+    getdata();
   }
 
   @override
@@ -122,10 +123,11 @@ class _EnrolClassState extends State<EnrolClass> {
                 const CircularProgressIndicator()
               else if (data.isEmpty) // Display message only if data is empty
                 const Center(
-                    child: Text(
-                  "this subject have no classes in it !",
-                  style: TextStyle(fontSize: 17),
-                ))
+                  child: Text(
+                    "This subject has no classes in it!",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                )
               else
                 for (int i = 0; i < data.length; i++)
                   Reg3card(
@@ -145,7 +147,27 @@ class _EnrolClassState extends State<EnrolClass> {
                                 .collection('class_module')
                                 .doc(data[i].id)
                                 .delete();
-                            getdata();
+
+                            QuerySnapshot query = await FirebaseFirestore
+                                .instance
+                                .collection('etudiant')
+                                .where('class', isEqualTo: data[i]['IDclass'])
+                                .get();
+
+                            WriteBatch batch =
+                                FirebaseFirestore.instance.batch();
+                            for (var doc in query.docs) {
+                              DocumentReference docToDelete = FirebaseFirestore
+                                  .instance
+                                  .collection('etudiant_module')
+                                  .doc('${doc.id}_${widget.id}');
+                              batch.delete(docToDelete);
+                            }
+
+                            await batch.commit(); // Await the batch commit
+
+                            await getdata(); // Await the getdata() call
+
                             AwesomeDialog(
                               context: context,
                               dialogType: DialogType.success,
@@ -189,30 +211,43 @@ class _ModuleclassState extends State<Moduleclass> {
   List<QueryDocumentSnapshot> allclassdata = [];
   List<QueryDocumentSnapshot> moduleclassdata = [];
   bool isDataLoaded = false;
-  void getdata() async {
-    QuerySnapshot allclass =
-        await FirebaseFirestore.instance.collection('class').get();
-    QuerySnapshot moduleclass =
-        await FirebaseFirestore.instance.collection('class_module').get();
-    allclassdata.addAll(allclass.docs);
-    moduleclassdata.addAll(moduleclass.docs);
-    List<String> moduleclassIDs =
-        moduleclassdata.map((doc) => doc['IDclass'] as String).toList();
 
-    predata = allclassdata
-        .where((doc) => !moduleclassIDs.contains(doc['ID']))
-        .toList();
-    setState(() {
-      data.clear();
-      data.addAll(predata);
-      isDataLoaded = true;
-    });
+  Future<void> getdata() async {
+    try {
+      // Clear previous data
+      allclassdata.clear();
+      moduleclassdata.clear();
+      predata.clear();
+
+      // Fetch new data
+      QuerySnapshot allclass =
+          await FirebaseFirestore.instance.collection('class').get();
+      QuerySnapshot moduleclass =
+          await FirebaseFirestore.instance.collection('class_module').get();
+      allclassdata.addAll(allclass.docs);
+      moduleclassdata.addAll(moduleclass.docs);
+      List<String> moduleclassIDs =
+          moduleclassdata.map((doc) => doc['IDclass'] as String).toList();
+
+      predata = allclassdata
+          .where((doc) => !moduleclassIDs.contains(doc['ID']))
+          .toList();
+
+      // Update state
+      setState(() {
+        data.clear();
+        data.addAll(predata);
+        isDataLoaded = true;
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
   }
 
   @override
   void initState() {
-    getdata();
     super.initState();
+    getdata();
   }
 
   TextEditingController id = TextEditingController();
@@ -273,14 +308,16 @@ class _ModuleclassState extends State<Moduleclass> {
                                 'IDmodule': widget.id,
                                 'IDprof': id.text
                               });
+
                               QuerySnapshot query = await FirebaseFirestore
                                   .instance
                                   .collection('etudiant')
                                   .where('class', isEqualTo: data[i].id)
                                   .get();
+
                               WriteBatch batch =
                                   FirebaseFirestore.instance.batch();
-                              // Update each student's class field to an empty string
+
                               for (var doc in query.docs) {
                                 Map<String, dynamic> newModuleData = {
                                   'idetudiant': doc.id,
@@ -288,24 +325,26 @@ class _ModuleclassState extends State<Moduleclass> {
                                   'note1': 0,
                                   'note2': 0,
                                   'final': 0,
-                                  // Add other fields as needed
                                 };
-                                DocumentReference newDocRef = FirebaseFirestore.instance.collection('etudiant_module').doc('${doc.id}_${widget.id}');
+                                DocumentReference newDocRef = FirebaseFirestore
+                                    .instance
+                                    .collection('etudiant_module')
+                                    .doc('${doc.id}_${widget.id}');
                                 batch.set(newDocRef, newModuleData);
                               }
-                              // Commit the batch
+
                               await batch.commit();
-                              getdata();
+                              await getdata();
                             } catch (e) {
-                              print('Error adding student : $e');
+                              print('Error adding student: $e');
                             }
+
                             AwesomeDialog(
                                     context: context,
                                     dialogType: DialogType.success,
                                     animType: AnimType.rightSlide,
                                     title: 'Success',
-                                    desc: 'Class added with success !',
-                                    btnCancelOnPress: () {},
+                                    desc: 'Class added with success!',
                                     btnOkOnPress: () {})
                                 .show();
                           }).show();

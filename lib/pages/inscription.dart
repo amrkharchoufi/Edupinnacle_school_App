@@ -58,12 +58,13 @@ class _InscriptionState extends State<Inscription> {
         'nom pere': fname,
         'cin  pere': fcin,
         'num pere': phone,
-        'class' : ''
+        'class': ''
       });
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'etat': 'inscrit',
       });
-
+      Navigator.pop(context);
+      Navigator.pop(context);
       Navigator.of(context).pushReplacementNamed("/Etudianthome");
     } catch (e) {
       AwesomeDialog(

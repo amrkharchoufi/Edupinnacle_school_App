@@ -113,7 +113,7 @@ class _LoginState extends State<Login> {
                             onPressed: () async {
                               if (myform.currentState!.validate()) {
                                 try {
-                                   await FirebaseAuth.instance
+                                  await FirebaseAuth.instance
                                       .signInWithEmailAndPassword(
                                           email: email.text.trim(),
                                           password: password.text.trim());
@@ -133,14 +133,17 @@ class _LoginState extends State<Login> {
                                     } else {
                                       const Center(
                                           child: CircularProgressIndicator());
+                                      Navigator.pop(context);
                                       Navigator.of(context)
                                           .pushReplacementNamed(
                                               "/Etudianthome");
                                     }
                                   } else if (role['role'] == "Prof") {
+                                    Navigator.pop(context);
                                     Navigator.of(context)
                                         .pushReplacementNamed("/profhome");
                                   } else if (role['role'] == "admin") {
+                                    Navigator.pop(context);
                                     Navigator.of(context)
                                         .pushReplacementNamed("/staffhome");
                                   }

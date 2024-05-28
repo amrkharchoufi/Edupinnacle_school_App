@@ -165,8 +165,7 @@ class _StudentsState extends State<Students> {
                         },
                       ).show();
                     }, // Adjust as necessary
-                    manage: () {
-                    }, // Adjust as necessary
+                    manage: () {}, // Adjust as necessary
                   ),
               const SizedBox(
                 height: 10,
@@ -234,24 +233,45 @@ class _StdaddState extends State<Stdadd> {
                     id: data[i]['cne'],
                     nom: data[i]['nom'],
                     prenom: data[i]['prenom'],
-                    add: () async{
+                    add: () async {
                       try {
-                            await FirebaseFirestore.instance
-                                .collection('etudiant')
-                                .doc(data[i].id)
-                                .update({'class': widget.id});
-                            getdata();
-                          } catch (e) {
-                            print('Error adding student : $e');
-                          }
+                        await FirebaseFirestore.instance
+                            .collection('etudiant')
+                            .doc(data[i].id)
+                            .update({'class': widget.id});
+                        QuerySnapshot query = await FirebaseFirestore.instance
+                            .collection('class_module')
+                            .where('IDclass', isEqualTo: widget.id)
+                            .get();
+                        WriteBatch batch = FirebaseFirestore.instance.batch();
+                        for (var doc in query.docs) {
+                          Map<String, dynamic> idmodule =
+                              doc.data() as Map<String, dynamic>;
+                          Map<String, dynamic> newModuleData = {
+                            'idetudiant': data[i].id,
+                            'idmodule': idmodule['IDmodule'],
+                            'note1': 0,
+                            'note2': 0,
+                            'final': 0,
+                          };
+                          DocumentReference newDocRef = FirebaseFirestore
+                              .instance
+                              .collection('etudiant_module')
+                              .doc('${data[i].id}_${idmodule['IDmodule']}');
+                          batch.set(newDocRef, newModuleData);
+                        }
+                        await batch.commit();
+                        getdata();
+                      } catch (e) {
+                        print('Error adding student : $e');
+                      }
                       AwesomeDialog(
                               context: context,
                               dialogType: DialogType.success,
                               animType: AnimType.rightSlide,
                               title: 'Success',
                               desc: 'student added to the class with succes !',
-                              btnOkOnPress: (){}
-                              )
+                              btnOkOnPress: () {})
                           .show();
                     }, // Adjust as necessary
                     manage: () {
