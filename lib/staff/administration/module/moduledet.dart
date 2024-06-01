@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/mywidgets/etudiantcard.dart';
 import 'package:edupinacle/mywidgets/registercard.dart';
 import 'package:edupinacle/mywidgets/textfield.dart';
+import 'package:edupinacle/staff/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -15,10 +18,30 @@ class Moduledet extends StatefulWidget {
 }
 
 class _ModuledetState extends State<Moduledet> {
+    Color primaryColor = AppColors.primaryColor;
+
+  bool isLoaded = true;
+  void _startTimer() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      // Refresh the colors every 5 seconds
+      print("Timer triggered. Refreshing colors...");
+      _initializeColors();
+    });
+  }
+
+  Future<void> _initializeColors() async {
+    await AppColors.initialize();
+    setState(() {
+      primaryColor = AppColors.primaryColor;
+
+      isLoaded = false;
+    });
+  }
   int _currentIndex = 0;
   late List<Widget> _pages;
   @override
   void initState() {
+    _startTimer();
     super.initState();
     _pages = [
       EnrolClass(
@@ -45,11 +68,11 @@ class _ModuledetState extends State<Moduledet> {
           style: const TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor: AppColors.primaryColor,
       ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor: AppColors.primaryColor,
         selectedItemColor: Colors.white,
         currentIndex: _currentIndex,
         onTap: _onItemTapped,

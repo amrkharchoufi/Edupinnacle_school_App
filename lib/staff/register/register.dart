@@ -1,6 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/mywidgets/registercard.dart';
+import 'package:edupinacle/staff/colors.dart';
 import 'package:edupinacle/staff/register/add%20register/addprof.dart';
 import 'package:edupinacle/staff/register/add%20register/addstaff.dart';
 import 'package:edupinacle/staff/register/add%20register/addstd.dart';
@@ -34,11 +35,11 @@ class _RegisterState extends State<Register> {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor: AppColors.primaryColor,
       ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor: AppColors.primaryColor,
         selectedItemColor: Colors.white,
         currentIndex: _currentIndex,
         onTap: _onItemTapped,
@@ -192,15 +193,15 @@ class _MaddState extends State<Madd> {
           'Users',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor: AppColors.primaryColor,
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const DrawerHeader(
+             DrawerHeader(
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 83, 80, 80),
+                color:  AppColors.primaryColor,
               ),
               child: Text(
                 'Select User Type',

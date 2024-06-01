@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Myinput extends StatefulWidget {
   final String label;
@@ -52,9 +53,97 @@ class _MyinputState extends State<Myinput> {
     return SizedBox(
       width: 280,
       child: TextFormField(
+        readOnly: widget.type == TextInputType.datetime,
         keyboardType: widget.type,
         controller: widget.mycontrol,
         obscureText: widget.obscure,
+        onTap: () {
+          if (widget.type == TextInputType.datetime) {
+            _selectDate(context);
+          }
+        },
+        textInputAction: TextInputAction.done,
+        decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.purple[50],
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(27),
+                borderSide: BorderSide.none),
+            hintText: '${widget.label} :',
+            prefixIcon: widget.preficon,
+            suffixIcon: widget.suficon),
+        validator: (value) {
+          if (value!.isEmpty) {
+            return "*${widget.label} required";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+}
+// Make sure you import the intl package
+
+class Myinput1 extends StatefulWidget {
+  final String label;
+  final Widget? preficon;
+  final Widget? suficon;
+  final bool obscure;
+  final TextEditingController mycontrol;
+  final TextInputType type;
+  const Myinput1(
+      {super.key,
+      required this.label,
+      this.preficon,
+      this.suficon,
+      required this.type,
+      required this.obscure,
+      required this.mycontrol});
+
+  @override
+  State<Myinput1> createState() => _Myinput1State();
+}
+
+class _Myinput1State extends State<Myinput1> {
+  bool obb = false;
+
+  @override
+  void initState() {
+    obb = widget.obscure;
+    super.initState();
+  }
+
+  void hidden() {
+    setState(() {
+      obb = !obb;
+    });
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(3000),
+      initialDatePickerMode: DatePickerMode.day,
+    );
+    if (picked != null) {
+      setState(() {
+        widget.mycontrol.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 280,
+      child: TextFormField(
+        keyboardType: widget.type,
+        controller: widget.mycontrol,
+        obscureText: widget.obscure,
+        readOnly: widget.type ==
+            TextInputType.datetime, // Make it read-only if it's a date
         onTap: () {
           if (widget.type == TextInputType.datetime) {
             _selectDate(context);

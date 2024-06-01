@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/mywidgets/textfield.dart';
+import 'package:edupinacle/staff/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -27,6 +30,36 @@ Future<bool> checkDocumentExists(String documentId) async {
 }
 
 class _AddclassState extends State<Addclass> {
+
+
+
+    Color primaryColor = AppColors.primaryColor;
+
+  bool isLoaded = true;
+  
+  @override
+  void initState() {
+    
+    super.initState();
+    _startTimer(); // Start the timer when the widget is initialized
+  }
+
+  void _startTimer() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      // Refresh the colors every 5 seconds
+      print("Timer triggered. Refreshing colors...");
+      _initializeColors();
+    });
+  }
+
+  Future<void> _initializeColors() async {
+    await AppColors.initialize();
+    setState(() {
+      primaryColor = AppColors.primaryColor;
+
+      isLoaded = false;
+    });
+  }
   TextEditingController number = TextEditingController();
   TextEditingController id = TextEditingController();
   GlobalKey<FormState> k = GlobalKey();
@@ -80,7 +113,7 @@ class _AddclassState extends State<Addclass> {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor: AppColors.primaryColor,
       ),
       body: Form(
         key: k,

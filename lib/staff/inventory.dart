@@ -2,6 +2,8 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/mywidgets/registercard.dart';
 import 'package:edupinacle/staff/administration/class/classdetail.dart';
+import 'package:edupinacle/staff/colors.dart';
+import 'package:edupinacle/staff/ressourcedetail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -58,7 +60,7 @@ class _InventoryState extends State<Inventory> {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor:  AppColors.primaryColor,
       ),
       body: Column(
         children: [
@@ -92,7 +94,7 @@ class _InventoryState extends State<Inventory> {
               ),
             ],
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 10),
           Expanded(
             child: SingleChildScrollView(
               child: Container(
@@ -153,7 +155,7 @@ class _InventoryState extends State<Inventory> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    Classdetail(id: data[i]['ID']),
+                                    Ressourcedetail(id: data[i]['ID']),
                               ),
                             );
                           },

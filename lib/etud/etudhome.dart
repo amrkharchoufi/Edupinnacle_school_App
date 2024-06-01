@@ -78,7 +78,7 @@ class _EtudhomeState extends State<Etudhome> {
                                             width: 5,
                                           ),
                                           Text(
-                                            data?.get('nom') ?? '',
+                                            data!.get('nom'),
                                             style: const TextStyle(
                                                 color: Colors.white,
                                                 fontFamily: "myfont",

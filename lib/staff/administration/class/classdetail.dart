@@ -1,6 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/mywidgets/etudiantcard.dart';
+import 'package:edupinacle/staff/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -46,11 +47,11 @@ class _ClassdetailState extends State<Classdetail> {
           style: const TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor: AppColors.primaryColor,
       ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor: AppColors.primaryColor,
         selectedItemColor: Colors.white,
         currentIndex: _currentIndex,
         onTap: _onItemTapped,

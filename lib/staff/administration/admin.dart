@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/mywidgets/calsscard.dart';
 import 'package:edupinacle/mywidgets/registercard.dart';
 import 'package:edupinacle/staff/administration/class/classdetail.dart';
 import 'package:edupinacle/staff/administration/module/moduledet.dart';
+import 'package:edupinacle/staff/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -18,11 +21,35 @@ class _AdminState extends State<Administration> {
   final List<Widget> _pages = [
     const Gclass(),
     const Gmodule(),
-
   ];
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
+    });
+  }
+
+  Color primaryColor = AppColors.primaryColor;
+  bool isLoaded = true;
+  @override
+  void initState() {
+    super.initState();
+    _startTimer(); // Start the timer when the widget is initialized
+  }
+
+  void _startTimer() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      // Refresh the colors every 5 seconds
+      print("Timer triggered. Refreshing colors...");
+      _initializeColors();
+    });
+  }
+
+  Future<void> _initializeColors() async {
+    await AppColors.initialize();
+    setState(() {
+      primaryColor = AppColors.primaryColor;
+
+      isLoaded = false;
     });
   }
 
@@ -35,11 +62,11 @@ class _AdminState extends State<Administration> {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor: AppColors.primaryColor,
       ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor: AppColors.primaryColor,
         selectedItemColor: Colors.white,
         currentIndex: _currentIndex,
         onTap: _onItemTapped,
@@ -97,7 +124,7 @@ class _GclassState extends State<Gclass> {
             getdata();
           }
         },
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor: AppColors.primaryColor,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
@@ -116,7 +143,11 @@ class _GclassState extends State<Gclass> {
               if (!isDataLoaded) // Display loading indicator if data is not loaded
                 const CircularProgressIndicator()
               else if (data.isEmpty) // Display message only if data is empty
-                const Center(child: Text("No Classes found !",style: TextStyle(fontSize: 17),))
+                const Center(
+                    child: Text(
+                  "No Classes found !",
+                  style: TextStyle(fontSize: 17),
+                ))
               else
                 for (int i = 0; i < data.length; i++)
                   Classcard(
@@ -198,9 +229,9 @@ class Gmodule extends StatefulWidget {
 }
 
 class _GmoduleState extends State<Gmodule> {
-    List<QueryDocumentSnapshot> data = [];
+  List<QueryDocumentSnapshot> data = [];
   bool isDataLoaded = false;
-  void getdata() async {
+  Future<void> getdata() async {
     final classes = FirebaseFirestore.instance.collection('module');
     QuerySnapshot query = await classes.get();
 
@@ -227,7 +258,7 @@ class _GmoduleState extends State<Gmodule> {
             getdata();
           }
         },
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor: AppColors.primaryColor,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
@@ -246,7 +277,11 @@ class _GmoduleState extends State<Gmodule> {
               if (!isDataLoaded) // Display loading indicator if data is not loaded
                 const CircularProgressIndicator()
               else if (data.isEmpty) // Display message only if data is empty
-                const Center(child: Text("No Subjects found",style: TextStyle(fontSize: 17),))
+                const Center(
+                    child: Text(
+                  "No Subjects found",
+                  style: TextStyle(fontSize: 17),
+                ))
               else
                 for (int i = 0; i < data.length; i++)
                   Mcard(
@@ -261,24 +296,41 @@ class _GmoduleState extends State<Gmodule> {
                         btnCancelOnPress: () {},
                         btnOkOnPress: () async {
                           try {
-                            await FirebaseFirestore.instance
-                                .collection('module')
-                                .doc(data[i].id)
-                                .delete();
-                            getdata();
                             QuerySnapshot query = await FirebaseFirestore
                                 .instance
-                                .collection('etudiant')
-                                .where('class', isEqualTo: data[i].id)
+                                .collection('class_module')
+                                .where('IDmodule', isEqualTo: data[i].id)
                                 .get();
                             WriteBatch batch =
                                 FirebaseFirestore.instance.batch();
-                            // Update each student's class field to an empty string
-                            for (var doc in query.docs) {
-                              batch.update(doc.reference, {'class': ''});
+                            for (var doc in query.docs) {  
+                               QuerySnapshot query1 = await FirebaseFirestore
+                                .instance
+                                .collection('etudiant')
+                                .where('class', isEqualTo: doc.get('IDclass'))
+                                .get();
+                            WriteBatch batch1 =
+                                FirebaseFirestore.instance.batch();
+                            for (var doc1 in query1.docs) {
+                              DocumentReference docToDelete = FirebaseFirestore
+                                  .instance
+                                  .collection('etudiant_module')
+                                  .doc('${doc1.id}_${data[i]['ID']}');
+                              batch1.delete(docToDelete);
                             }
-                            // Commit the batch
+                            await batch1.commit();
+                              DocumentReference docToDelete = FirebaseFirestore
+                                  .instance
+                                  .collection('class_module')
+                                  .doc(doc.id);
+                              batch.delete(docToDelete);
+                            }
                             await batch.commit();
+                            await FirebaseFirestore.instance
+                                .collection('module')
+                                .doc(data[i].id)
+                                .delete(); // Await the batch commit
+                            await getdata(); // Await the getdata() call
                             AwesomeDialog(
                               context: context,
                               dialogType: DialogType.success,
@@ -314,4 +366,3 @@ class _GmoduleState extends State<Gmodule> {
     );
   }
 }
-

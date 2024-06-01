@@ -1,6 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/mywidgets/textfield.dart';
+import 'package:edupinacle/staff/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,7 @@ class Resadd extends StatefulWidget {
 Future<bool> checkDocumentExists(String documentId) async {
   // Get a reference to the document
   DocumentReference docRef =
-      FirebaseFirestore.instance.collection('module').doc(documentId);
+      FirebaseFirestore.instance.collection('inventory').doc(documentId);
 
   // Get the document
   DocumentSnapshot docSnapshot = await docRef.get();
@@ -32,7 +33,6 @@ class _ResaddState extends State<Resadd> {
   TextEditingController id = TextEditingController();
   GlobalKey<FormState> k = GlobalKey();
   void Addclass(String id, String type) async {
-    Map<String, List<Map<String, String>>> schedule = {};
     bool exist = await checkDocumentExists(id);
     if (!exist) {
       await FirebaseFirestore.instance
@@ -70,7 +70,7 @@ class _ResaddState extends State<Resadd> {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 83, 80, 80),
+        backgroundColor:  AppColors.primaryColor,
       ),
       body: Form(
         key: k,
