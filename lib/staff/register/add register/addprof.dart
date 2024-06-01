@@ -24,6 +24,14 @@ class _MaddPrfState extends State<MaddPrf> {
   Future<void> inscription(String nom, String prenom, String cin, String date,
       String phone, String adresse, String email, String pwd) async {
     try {
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      String? uid1 = currentUser!.uid;
+
+      DocumentSnapshot adminSnapshot =
+          await FirebaseFirestore.instance.collection('admins').doc(uid1).get();
+      String adminEmail = adminSnapshot.get('email');
+      String adminPassword = adminSnapshot.get('pwd');
+
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
@@ -50,6 +58,11 @@ class _MaddPrfState extends State<MaddPrf> {
         'adresse': adresse,
         'telephone': phone,
       });
+      await FirebaseAuth.instance.signOut();
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: adminEmail,
+        password: adminPassword,
+      );
       AwesomeDialog(
         context: context,
         dialogType: DialogType.success,

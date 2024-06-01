@@ -33,6 +33,14 @@ class _MaddStdState extends State<MaddStd> {
       String email,
       String pwd) async {
     try {
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      String? uid1 = currentUser!.uid;
+
+      DocumentSnapshot adminSnapshot =
+          await FirebaseFirestore.instance.collection('admins').doc(uid1).get();
+      String adminEmail = adminSnapshot.get('email');
+      String adminPassword = adminSnapshot.get('pwd');
+
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
@@ -62,12 +70,17 @@ class _MaddStdState extends State<MaddStd> {
         'nom pere': fname,
         'cin  pere': fcin,
         'num pere': phone,
-        'class' : '',
+        'class': '',
         // Add more fields as needed
       });
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'etat': 'inscrit',
       });
+      await FirebaseAuth.instance.signOut();
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: adminEmail,
+        password: adminPassword,
+      );
       AwesomeDialog(
         context: context,
         dialogType: DialogType.success,

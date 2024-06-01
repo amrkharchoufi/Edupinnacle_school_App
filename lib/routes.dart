@@ -4,8 +4,10 @@ import 'package:edupinacle/prof/courses.dart';
 import 'package:edupinacle/prof/planning.dart';
 import 'package:edupinacle/staff/administration/class/addclass.dart';
 import 'package:edupinacle/staff/administration/module/madd.dart';
+import 'package:edupinacle/staff/inventory.dart';
 import 'package:edupinacle/staff/register/register.dart';
 import 'package:edupinacle/staff/administration/admin.dart';
+import 'package:edupinacle/staff/ressourceadd.dart';
 import 'package:edupinacle/staff/staffaccount.dart';
 import 'package:edupinacle/staff/staffhome.dart';
 import 'package:flutter/material.dart';
@@ -53,5 +55,7 @@ final Map<String, WidgetBuilder> routes = {
   '/Admin' : (context) => const Administration(),
   '/classadd' : (context) => const Addclass(),
   '/moduleadd' : (context) => const Moduleadd(),
+  '/Inventory' : (context) => const Inventory(),
+  '/resourceadd' : (context) => const Resadd(),
 
 };
