@@ -86,7 +86,7 @@ class _SFAccountState extends State<SFAccount> {
                         CircleAvatar(
                           radius: 45,
                           backgroundImage:
-                              AssetImage("assets/images/stident.jpeg"),
+                              AssetImage("assets/images/pfp.jpg"),
                         ),
                         SizedBox(width: 15),
                         Column(

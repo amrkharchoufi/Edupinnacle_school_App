@@ -28,7 +28,7 @@ class _MaddStfState extends State<MaddStf> {
       String? uid1 = currentUser!.uid;
 
       DocumentSnapshot adminSnapshot =
-          await FirebaseFirestore.instance.collection('admins').doc(uid1).get();
+          await FirebaseFirestore.instance.collection('users').doc(uid1).get();
       String adminEmail = adminSnapshot.get('email');
       String adminPassword = adminSnapshot.get('pwd');
 

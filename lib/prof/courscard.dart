@@ -66,7 +66,7 @@ class PRCoursecard extends StatelessWidget {
                       height: 15,
                     ),
                     Text(
-                      classroom,
+                      'class $classroom',
                       style: const TextStyle(
                           color: Color.fromARGB(255, 34, 34, 34),
                           fontSize: 12,

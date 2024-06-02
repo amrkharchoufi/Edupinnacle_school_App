@@ -133,7 +133,7 @@ class _StaffhomeState extends State<Staffhome> {
                               CircleAvatar(
                                 radius: 45,
                                 backgroundImage:
-                                    AssetImage("assets/images/stident.jpeg"),
+                                    AssetImage("assets/images/pfp.jpg"),
                               ),
                             ],
                           ),

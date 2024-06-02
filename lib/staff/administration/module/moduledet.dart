@@ -246,7 +246,7 @@ class _ModuleclassState extends State<Moduleclass> {
       QuerySnapshot allclass =
           await FirebaseFirestore.instance.collection('class').get();
       QuerySnapshot moduleclass =
-          await FirebaseFirestore.instance.collection('class_module').get();
+          await FirebaseFirestore.instance.collection('class_module').where('IDmodule',isEqualTo: widget.id).get();
       allclassdata.addAll(allclass.docs);
       moduleclassdata.addAll(moduleclass.docs);
       List<String> moduleclassIDs =
@@ -323,6 +323,17 @@ class _ModuleclassState extends State<Moduleclass> {
                           animType: AnimType.rightSlide,
                           btnOkOnPress: () async {
                             try {
+                            Map<String, dynamic> feed = {};
+                                await FirebaseFirestore.instance
+                                  .collection('Feed')
+                                  .doc()
+                                  .set({
+                                'IDclass': data[i]['ID'],
+                                'IDmodule': widget.id,
+                                'IDprof': id.text,
+                                'Feed' : feed
+                              });
+
                               await FirebaseFirestore.instance
                                   .collection('class_module')
                                   .doc('${data[i].id}_${widget.id}')
@@ -343,6 +354,7 @@ class _ModuleclassState extends State<Moduleclass> {
 
                               for (var doc in query.docs) {
                                 Map<String, dynamic> newModuleData = {
+                                  'idclass' : data[i].id,
                                   'idetudiant': doc.id,
                                   'idmodule': widget.id,
                                   'note1': 0,

@@ -24,7 +24,7 @@ class CourseDetail extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Coursedetcard(message: message, prof: teacher,date: "15 may",),
+            Coursedetcard1(message: message, prof: teacher,date: "15 may"),
           ],
         ),
       ),

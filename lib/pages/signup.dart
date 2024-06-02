@@ -35,13 +35,13 @@ class _SignupState extends State<Signup> {
         // Add more fields as needed
       });
       Navigator.of(context).pushReplacementNamed("/inscrihome");
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
       AwesomeDialog(
         context: context,
         dialogType: DialogType.error,
         animType: AnimType.rightSlide,
         title: 'Erreur',
-        desc: e.toString(),
+        desc: e.message,
         btnOkOnPress: () {},
       ).show();
     }

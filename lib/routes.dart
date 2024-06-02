@@ -1,4 +1,5 @@
 import 'package:edupinacle/pages/inscription.dart';
+import 'package:edupinacle/pages/test.dart';
 import 'package:edupinacle/prof/account.dart';
 import 'package:edupinacle/prof/courses.dart';
 import 'package:edupinacle/prof/planning.dart';
