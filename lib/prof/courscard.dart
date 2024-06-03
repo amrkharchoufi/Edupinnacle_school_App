@@ -1,6 +1,17 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-class PRCoursecard extends StatelessWidget {
+import 'package:edupinacle/staff/colors.dart';
+import 'package:flutter/material.dart';
+Color brightenColor(Color color, double amount) {
+    assert(amount >= 0 && amount <= 1);
+    HSLColor hslColor = HSLColor.fromColor(color);
+    HSLColor brighterHslColor = hslColor.withLightness(
+      (hslColor.lightness + amount).clamp(0.0, 1.0),
+    );
+    return brighterHslColor.toColor();
+  }
+
+class PRCoursecard extends StatefulWidget {
   final String module;
   final String title;
   final String classroom;
@@ -10,6 +21,36 @@ class PRCoursecard extends StatelessWidget {
     required this.title,
     required this.classroom,
   });
+  State<PRCoursecard> createState() => _PRCoursecardState();
+}
+
+class _PRCoursecardState extends State<PRCoursecard> {
+  Color primaryColor = AppColors.primaryColor;
+
+  bool isLoaded = false;
+void initState() {
+    super.initState();
+    _startTimer(); // Start the timer when the widget is initialized
+  }
+
+  void _startTimer() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      // Refresh the colors every 5 seconds
+      print("Timer triggered. Refreshing colors...");
+      _initializeColors();
+    });
+  }
+
+  Future<void> _initializeColors() async {
+    await AppColors.initialize();
+    setState(() {
+      primaryColor = AppColors.primaryColor;
+    
+      isLoaded = true;
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +58,11 @@ class PRCoursecard extends StatelessWidget {
       width: double.infinity,
       child: Card(
           elevation: 5,
-          color: const Color.fromARGB(255, 244, 218, 248),
+          color: brightenColor(primaryColor,0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
-            side: const BorderSide(
-              color: Colors.purple, // Border color
+            side:  BorderSide(
+              color: primaryColor, // Border color
               width: 1, // Border width
             ),
           ),
@@ -34,9 +75,9 @@ class PRCoursecard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 4),
                       decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 241, 164, 255),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
+                        color: brightenColor(primaryColor,0.3),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 2,
@@ -44,20 +85,20 @@ class PRCoursecard extends StatelessWidget {
                             offset: const Offset(0, 3), // Shadow position
                           ),
                         ],
-                          ),
+                      ),
                       child: Text(
-                        module,
+                        widget.module,
                         style:
-                            const TextStyle(color: Colors.purple, fontSize: 15),
+                             TextStyle(color: primaryColor, fontSize: 15),
                       ),
                     ),
                     const SizedBox(
                       height: 15,
                     ),
                     Text(
-                      title,
-                      style: const TextStyle(
-                          color: Colors.purple,
+                      widget.title,
+                      style:  TextStyle(
+                          color: primaryColor,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           fontFamily: "myfont1"),
@@ -66,7 +107,7 @@ class PRCoursecard extends StatelessWidget {
                       height: 15,
                     ),
                     Text(
-                      'class $classroom',
+                      'class ${widget.classroom}',
                       style: const TextStyle(
                           color: Color.fromARGB(255, 34, 34, 34),
                           fontSize: 12,

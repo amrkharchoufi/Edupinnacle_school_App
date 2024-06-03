@@ -1,6 +1,16 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:edupinacle/staff/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class Profhome extends StatelessWidget {
+class Profhome extends StatefulWidget {
+  const Profhome({Key? key}) : super(key: key);
+  State<Profhome> createState() => _ProfhomeState();
+}
+
+class _ProfhomeState extends State<Profhome> {
   static List<Map<String, dynamic>> tab = [
     {'icon': Icons.event, 'name': 'Planning', 'route': '/prPlanning'},
     {'icon': Icons.school, 'name': 'Courses', 'route': '/prCourses'},
@@ -8,12 +18,53 @@ class Profhome extends StatelessWidget {
     {'icon': Icons.message, 'name': 'Chat', 'route': '/prmessagerie'},
   ];
 
-  const Profhome({Key? key}) : super(key: key);
+  Color primaryColor = AppColors.primaryColor;
+
+  bool isLoaded = false;
+  Map<String, dynamic> data = {};
+  void getdata() async {
+    String user = FirebaseAuth.instance.currentUser!.uid;
+    DocumentSnapshot minidata =
+        await FirebaseFirestore.instance.collection('users').doc(user).get();
+    String id = minidata.get('ID');
+    DocumentSnapshot admin =
+        await FirebaseFirestore.instance.collection('Professeur').doc(id).get();
+    setState(() {
+      data = admin.data() as Map<String, dynamic>;
+    });
+  }
+
+  @override
+  void initState() {
+    getdata();
+    super.initState();
+    _startTimer(); // Start the timer when the widget is initialized
+  }
+
+  void _startTimer() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      // Refresh the colors every 5 seconds
+      print("Timer triggered. Refreshing colors...");
+      _initializeColors();
+    });
+  }
+
+  Future<void> _initializeColors() async {
+    await AppColors.initialize();
+    setState(() {
+      primaryColor = AppColors.primaryColor;
+    
+      isLoaded = true;
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 164, 45, 185),
+    return isLoaded 
+    ?Scaffold(
+      backgroundColor: primaryColor,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -42,8 +93,8 @@ class Profhome extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 5),
-                              const Text(
-                                "Fatima Zahra Ziani",
+                               Text(
+                                "${data['nom']} ${data['prenom']}",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontFamily: "myfont",
@@ -61,7 +112,7 @@ class Profhome extends StatelessWidget {
                                   horizontal: 10,
                                   vertical: 1,
                                 ),
-                                child:  Text(
+                                child: Text(
                                   "2023-2024",
                                   style: TextStyle(
                                     color: Colors.grey[900],
@@ -86,21 +137,19 @@ class Profhome extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Container(
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 10),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             height: 100,
                             child: Column(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   "Attendance",
                                   style: TextStyle(
-                                    color: Colors.purple,
+                                    color: primaryColor,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                   ),
@@ -108,7 +157,7 @@ class Profhome extends StatelessWidget {
                                 Text(
                                   "90.02%",
                                   style: TextStyle(
-                                    color: Colors.purple,
+                                    color: primaryColor,
                                     fontWeight: FontWeight.w300,
                                     fontSize: 30,
                                   ),
@@ -122,21 +171,19 @@ class Profhome extends StatelessWidget {
                         ),
                         Expanded(
                           child: Container(
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 10),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             height: 100,
                             child: Column(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   "Messages",
                                   style: TextStyle(
-                                    color: Colors.purple,
+                                    color: primaryColor,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                   ),
@@ -144,7 +191,7 @@ class Profhome extends StatelessWidget {
                                 Text(
                                   "5",
                                   style: TextStyle(
-                                    color: Colors.purple,
+                                    color: primaryColor,
                                     fontWeight: FontWeight.w300,
                                     fontSize: 30,
                                   ),
@@ -186,7 +233,7 @@ class Profhome extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.only(top: 10),
                           decoration: BoxDecoration(
-                            color: Colors.purple,
+                            color: primaryColor,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           width: 140,
@@ -220,6 +267,7 @@ class Profhome extends StatelessWidget {
           ),
         ],
       ),
-    );
+    )
+    : Scaffold(body: const Center(child: CircularProgressIndicator()));
   }
 }
