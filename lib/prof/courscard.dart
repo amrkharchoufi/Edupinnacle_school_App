@@ -35,8 +35,6 @@ void initState() {
 
   void _startTimer() {
     Timer.periodic(Duration(seconds: 1), (timer) {
-      // Refresh the colors every 5 seconds
-      print("Timer triggered. Refreshing colors...");
       _initializeColors();
     });
   }

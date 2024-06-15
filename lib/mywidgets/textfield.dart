@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:edupinacle/staff/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -6,6 +9,7 @@ class Myinput extends StatefulWidget {
   final Widget? preficon;
   final Widget? suficon;
   final bool obscure;
+  final double? width;
   final TextEditingController mycontrol;
   final TextInputType type;
   const Myinput(
@@ -13,6 +17,7 @@ class Myinput extends StatefulWidget {
       required this.label,
       this.preficon,
       this.suficon,
+      this.width,
       required this.type,
       required this.obscure,
       required this.mycontrol});
@@ -22,11 +27,41 @@ class Myinput extends StatefulWidget {
 }
 
 class _MyinputState extends State<Myinput> {
+  void _startTimer() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      // Refresh the colors every 5 seconds
+      print("Timer triggered. Refreshing colors...");
+      _initializeColors();
+    });
+  }
+
+  Color brightenColor(Color color, double amount) {
+    assert(amount >= 0 && amount <= 1);
+    HSLColor hslColor = HSLColor.fromColor(color);
+    HSLColor brighterHslColor = hslColor.withLightness(
+      (hslColor.lightness + amount).clamp(0.0, 1.0),
+    );
+    return brighterHslColor.toColor();
+  }
+
+  Color primaryColor = AppColors.primaryColor;
+
+  bool isLoaded = false;
+  Future<void> _initializeColors() async {
+    await AppColors.initialize();
+    setState(() {
+      primaryColor = AppColors.primaryColor;
+
+      isLoaded = true;
+    });
+  }
+
   bool obb = false;
   @override
   void initState() {
     obb = widget.obscure;
     super.initState();
+    _startTimer();
   }
 
   void hidden() {
@@ -51,7 +86,7 @@ class _MyinputState extends State<Myinput> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 280,
+      width: widget.width ?? 280,
       child: TextFormField(
         readOnly: widget.type == TextInputType.datetime,
         keyboardType: widget.type,
@@ -65,7 +100,7 @@ class _MyinputState extends State<Myinput> {
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.purple[50],
+            fillColor: brightenColor(primaryColor, 0.5),
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(27),
                 borderSide: BorderSide.none),
@@ -86,6 +121,7 @@ class _MyinputState extends State<Myinput> {
 
 class Myinput1 extends StatefulWidget {
   final String label;
+  final double? width;
   final Widget? preficon;
   final Widget? suficon;
   final bool obscure;
@@ -98,19 +134,48 @@ class Myinput1 extends StatefulWidget {
       this.suficon,
       required this.type,
       required this.obscure,
-      required this.mycontrol});
+      required this.mycontrol, this.width});
 
   @override
   State<Myinput1> createState() => _Myinput1State();
 }
 
 class _Myinput1State extends State<Myinput1> {
-  bool obb = false;
+  void _startTimer() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      // Refresh the colors every 5 seconds
+      print("Timer triggered. Refreshing colors...");
+      _initializeColors();
+    });
+  }
 
+  Color brightenColor(Color color, double amount) {
+    assert(amount >= 0 && amount <= 1);
+    HSLColor hslColor = HSLColor.fromColor(color);
+    HSLColor brighterHslColor = hslColor.withLightness(
+      (hslColor.lightness + amount).clamp(0.0, 1.0),
+    );
+    return brighterHslColor.toColor();
+  }
+
+  Color primaryColor = AppColors.primaryColor;
+
+  bool isLoaded = false;
+  Future<void> _initializeColors() async {
+    await AppColors.initialize();
+    setState(() {
+      primaryColor = AppColors.primaryColor;
+
+      isLoaded = true;
+    });
+  }
+
+  bool obb = false;
   @override
   void initState() {
     obb = widget.obscure;
     super.initState();
+    _startTimer();
   }
 
   void hidden() {
@@ -137,7 +202,7 @@ class _Myinput1State extends State<Myinput1> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 280,
+      width: widget.width,
       child: TextFormField(
         keyboardType: widget.type,
         controller: widget.mycontrol,
@@ -152,7 +217,7 @@ class _Myinput1State extends State<Myinput1> {
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.purple[50],
+            fillColor: brightenColor(primaryColor, 0.5),
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(27),
                 borderSide: BorderSide.none),

@@ -1,18 +1,59 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-class Coursedetcard extends StatelessWidget {
-  final String prof;
+import 'package:edupinacle/staff/colors.dart';
+import 'package:flutter/material.dart';
+class Coursedetcard extends StatefulWidget{
+    final String prof;
   final String message;
   final String date;
   final Widget delete;
   final Widget file;
-  const Coursedetcard({
+ const Coursedetcard({
     super.key,
     required this.message,
     required this.prof,
     required this.date,
     required this.delete, required this.file,
   });
+ State<Coursedetcard> createState() => _Coursedetcard();
+}
+
+class _Coursedetcard extends State<Coursedetcard> {
+     void _startTimer() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      // Refresh the colors every 5 seconds
+      print("Timer triggered. Refreshing colors...");
+      _initializeColors();
+    });
+  }
+  Color brightenColor(Color color, double amount) {
+    assert(amount >= 0 && amount <= 1);
+    HSLColor hslColor = HSLColor.fromColor(color);
+    HSLColor brighterHslColor = hslColor.withLightness(
+      (hslColor.lightness + amount).clamp(0.0, 1.0),
+    );
+    return brighterHslColor.toColor();
+  }
+  Color primaryColor = AppColors.primaryColor;
+
+  bool isLoaded = false;
+  Future<void> _initializeColors() async {
+    await AppColors.initialize();
+    setState(() {
+      primaryColor = AppColors.primaryColor;
+
+      isLoaded = true;
+    });
+  }
+
+  
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -20,16 +61,16 @@ class Coursedetcard extends StatelessWidget {
       width: double.infinity,
       child: Card(
           elevation: 5,
-          color: const Color.fromARGB(255, 244, 218, 248),
+          color: brightenColor(primaryColor,0.5),
           shape: RoundedRectangleBorder(
             side: BorderSide.none,
           ),
           child: Container(
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(color: Colors.purple, width: 2), // Top border
+                top: BorderSide(color:   primaryColor, width: 2), // Top border
                 bottom:
-                    BorderSide(color: Colors.purple, width: 2), // Bottom border
+                    BorderSide(color:   primaryColor, width: 2), // Bottom border
               ),
             ),
             child: Padding(
@@ -55,7 +96,7 @@ class Coursedetcard extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    prof,
+                                    widget.prof,
                                     style: TextStyle(
                                       color: Colors.grey[900], // Text color
                                       fontSize: 16.0, // Font size
@@ -64,7 +105,7 @@ class Coursedetcard extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    date,
+                                  widget.date,
                                     style: TextStyle(
                                       color: Colors.grey[900], // Text color
                                       fontSize: 12.0, // Font size
@@ -75,14 +116,14 @@ class Coursedetcard extends StatelessWidget {
                               )
                             ],
                           ),
-                          delete
+                          widget.delete
                         ],
                       ),
                       const SizedBox(
                         height: 15,
                       ),
                       Text(
-                        message,
+                        widget.message,
                         style: TextStyle(
                             color: Colors.grey[900],
                             fontFamily: "myfont",
@@ -91,7 +132,7 @@ class Coursedetcard extends StatelessWidget {
                       const SizedBox(
                         height: 20,
                       ),
-                      file
+                      widget.file
                     ])),
 
           )),
