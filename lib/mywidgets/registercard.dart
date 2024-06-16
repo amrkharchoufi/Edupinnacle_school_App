@@ -375,7 +375,9 @@ class Reservationcard extends StatelessWidget {
     super.key,
     required this.id,
     required this.delete,
-   required this.date, required this.start,required this.end,
+    required this.date,
+    required this.start,
+    required this.end,
   });
   @override
   Widget build(BuildContext context) {
@@ -399,12 +401,12 @@ class Reservationcard extends StatelessWidget {
                 Row(
                   children: [
                     const Icon(
-                          Icons.event,
-                          size: 30,
-                        ),
-                        const SizedBox(
-                          width: 7,
-                        ),
+                      Icons.event,
+                      size: 30,
+                    ),
+                    const SizedBox(
+                      width: 7,
+                    ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -416,12 +418,23 @@ class Reservationcard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               fontFamily: "myfont1"),
                         ),
-                        SizedBox(height: 10,),
-                        Text(date,style: TextStyle(color: Colors.white,fontSize: 17),),
-                        SizedBox(height: 10,),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          date,
+                          style: TextStyle(color: Colors.white, fontSize: 17),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
                         Row(
                           children: [
-                            Text('$start H - $end H',style: TextStyle(color: Colors.white,fontSize: 14),),
+                            Text(
+                              '$start H - $end H',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                            ),
                           ],
                         )
                       ],
@@ -441,6 +454,177 @@ class Reservationcard extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
+                )
+              ],
+            ),
+          )),
+    );
+  }
+}
+
+class Facturecard extends StatelessWidget {
+  final String id;
+  final title;
+  final total;
+  final Function? delete;
+  Facturecard({
+    super.key,
+    required this.id,
+    required this.delete,
+    required this.title, this.total,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+          elevation: 5,
+          color: Colors.grey,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(
+              color: Colors.blueGrey, // Border color
+              width: 1, // Border width
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      FontAwesomeIcons.moneyBill,
+                      size: 30,
+                    ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          id,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "myfont1"),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          title,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "myfont1"),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          total,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "myfont1"),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                MaterialButton(
+                  onPressed: delete != null ? () => delete!() : null,
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(5)),
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )),
+    );
+  }
+}
+
+class RessourcePRcard extends StatelessWidget {
+  final String id;
+  final Function? manage;
+  RessourcePRcard(
+      {super.key,
+      required this.id,
+      required this.manage});
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+          elevation: 5,
+          color: Colors.grey,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(
+              color: Colors.blueGrey, // Border color
+              width: 1, // Border width
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.science,
+                      size: 30,
+                    ),
+                    const SizedBox(
+                      width: 7,
+                    ),
+                    Text(
+                      id,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "myfont1"),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    MaterialButton(
+                      onPressed: manage != null ? () => manage!() : null,
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: const Icon(
+                          Icons.bookmark,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                  ],
                 )
               ],
             ),

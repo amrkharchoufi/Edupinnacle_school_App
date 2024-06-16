@@ -21,7 +21,6 @@ class _StaffhomeState extends State<Staffhome> {
     {'icon': Icons.payment, 'name': 'Facture', 'route': '/Facture'},
     {'icon': Icons.school_rounded, 'name': 'Administration', 'route': '/Admin'},
     {'icon': Icons.settings, 'name': 'App Panel', 'route': '/Settings'},
-    {'icon': Icons.message, 'name': 'Chat', 'route': '/stfmessagerie'},
     {'icon': Icons.person, 'name': 'Account', 'route': '/stfaccount'},
   ];
 

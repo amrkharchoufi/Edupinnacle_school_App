@@ -1,12 +1,13 @@
 import 'package:edupinacle/pages/inscription.dart';
 import 'package:edupinacle/pages/test.dart';
 import 'package:edupinacle/prof/account.dart';
-import 'package:edupinacle/prof/addasign.dart';
 import 'package:edupinacle/prof/courses.dart';
 import 'package:edupinacle/prof/planning.dart';
+import 'package:edupinacle/prof/ressourcepr.dart';
 import 'package:edupinacle/staff/administration/class/addclass.dart';
 import 'package:edupinacle/staff/administration/module/madd.dart';
 import 'package:edupinacle/staff/facture.dart';
+import 'package:edupinacle/staff/factureadd.dart';
 import 'package:edupinacle/staff/inventory.dart';
 import 'package:edupinacle/staff/register/register.dart';
 import 'package:edupinacle/staff/administration/admin.dart';
@@ -53,6 +54,7 @@ final Map<String, WidgetBuilder> routes = {
   '/prPlanning': (context) => const PRPlanning(),
   '/prCourses': (context) => const PRCourses(),
   '/praccount':(context) => const PRAccount(),
+  '/prressource' : (context) => const PRressource(),
   // For Staff
   '/staffhome' : (context) => const Staffhome(),
   '/Registration' : (context) => const Register(),
@@ -65,4 +67,6 @@ final Map<String, WidgetBuilder> routes = {
  '/reservationadd' : (context) => const Reservationadd(),
  '/Facture'  : (context) => const Facturisation(),
  '/Settings' : (context) => const Settings(),
+ '/factureadd' : (context) => const Addfacture(),
 };
+

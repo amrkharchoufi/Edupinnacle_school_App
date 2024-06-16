@@ -7,24 +7,26 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
-class Ressourcedetail extends StatefulWidget {
+class PRRessourcedet extends StatefulWidget {
   final id;
-  const Ressourcedetail({super.key, required this.id});
+  final idprof;
+  const PRRessourcedet({super.key, required this.id, this.idprof});
 
   @override
-  State<Ressourcedetail> createState() => _RessourcedetailState();
+  State<PRRessourcedet> createState() => _PRRessourcedetState();
 }
 
-class _RessourcedetailState extends State<Ressourcedetail> {
+class _PRRessourcedetState extends State<PRRessourcedet> {
   List<QueryDocumentSnapshot> data = [];
   bool isDataLoaded = false;
 
   void getdata() async {
     final classes;
-     
+
     classes = FirebaseFirestore.instance
         .collection('reservation')
-        .where('IDsalle', isEqualTo: widget.id);
+        .where('IDsalle', isEqualTo: widget.id)
+        .where('IDreservateur', isEqualTo: widget.idprof);
     QuerySnapshot query = await classes.get();
     setState(() {
       data.clear();
@@ -47,7 +49,8 @@ class _RessourcedetailState extends State<Ressourcedetail> {
             final result = await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => Reservationadd(id: widget.id),
+                builder: (context) =>
+                    PRRessourcedetadd(id: widget.id, idprof: widget.idprof),
               ),
             );
             ;
@@ -55,8 +58,7 @@ class _RessourcedetailState extends State<Ressourcedetail> {
               getdata();
             }
           },
-          child: FaIcon(FontAwesomeIcons.plus)
-          ),
+          child: FaIcon(FontAwesomeIcons.plus)),
       appBar: AppBar(
         title: Text(widget.id, style: TextStyle(color: Colors.white)),
         centerTitle: true,
@@ -100,7 +102,7 @@ class _RessourcedetailState extends State<Ressourcedetail> {
                               context: context,
                               dialogType: DialogType.warning,
                               animType: AnimType.rightSlide,
-                              title: 'Delete Ressource',
+                              title: 'Delete Reservation',
                               desc:
                                   'Are you sure you want to delete this Reservation?',
                               btnCancelOnPress: () {},
@@ -141,12 +143,13 @@ class _RessourcedetailState extends State<Ressourcedetail> {
   }
 }
 
-class Reservationadd extends StatefulWidget {
+class PRRessourcedetadd extends StatefulWidget {
   final id;
-  const Reservationadd({super.key, this.id});
+  final idprof;
+  const PRRessourcedetadd({super.key, this.id, this.idprof});
 
   @override
-  State<Reservationadd> createState() => _ReservationaddState();
+  State<PRRessourcedetadd> createState() => _PRRessourcedetaddState();
 }
 
 Future<bool> checkReservation(
@@ -182,7 +185,7 @@ Future<bool> checkReservation(
   return false;
 }
 
-class _ReservationaddState extends State<Reservationadd> {
+class _PRRessourcedetaddState extends State<PRRessourcedetadd> {
   String? _selectedstart;
   String? _selectedend;
   final List<String> _dropdownItems = [
@@ -209,7 +212,7 @@ class _ReservationaddState extends State<Reservationadd> {
         'date': date,
         'start': start,
         'end': end,
-        'IDreservateur': id
+        'IDreservateur': widget.idprof
       });
       AwesomeDialog(
         context: context,
@@ -266,22 +269,6 @@ class _ReservationaddState extends State<Reservationadd> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Reservation for :",
-                      style: TextStyle(
-                          color: Colors.grey[900],
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    const SizedBox(height: 20),
-                    Myinput(
-                        label: 'Set Id ',
-                        type: TextInputType.text,
-                        obscure: false,
-                        mycontrol: id),
-                    const SizedBox(
-                      height: 20,
-                    ),
                     Text(
                       "Reservation date :",
                       style: TextStyle(

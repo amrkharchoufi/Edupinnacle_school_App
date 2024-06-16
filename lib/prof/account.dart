@@ -140,9 +140,9 @@ class _PRAccountState extends State<PRAccount> {
                     ),
                   ),
                 ),
-                const Expanded(
+                 Expanded(
                   flex: 3,
-                  child: PRAccountCard(),
+                  child: STAccountCard(telephone: data['telephone'], adress: data['adresse'], date: data['date naisance'], cin: data['cin'], email: data2['email'],),
                 )
               ],
             ),

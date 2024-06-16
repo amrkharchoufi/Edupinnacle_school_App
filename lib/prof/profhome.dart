@@ -15,7 +15,7 @@ class _ProfhomeState extends State<Profhome> {
     {'icon': Icons.event, 'name': 'Planning', 'route': '/prPlanning'},
     {'icon': Icons.school, 'name': 'Courses', 'route': '/prCourses'},
     {'icon': Icons.person, 'name': 'Account', 'route': '/praccount'},
-    {'icon': Icons.message, 'name': 'Chat', 'route': '/prmessagerie'},
+    {'icon': Icons.settings_input_component_rounded, 'name': 'Ressource', 'route': '/prressource'},
   ];
 
   Color primaryColor = AppColors.primaryColor;

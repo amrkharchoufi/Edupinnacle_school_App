@@ -1,22 +1,26 @@
 import 'dart:io';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/mywidgets/textfield.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AddAssignment extends StatefulWidget {
-  final idmodule;
-  final idprof;
-  final idclass;
-  final color;
-  const AddAssignment(
-      {super.key,
-      required this.idmodule,
-      required this.idprof,
-      required this.idclass,
-      required this.color});
+  final String idmodule;
+  final String idprof;
+  final String idclass;
+  final Color color;
+
+  const AddAssignment({
+    Key? key,
+    required this.idmodule,
+    required this.idprof,
+    required this.idclass,
+    required this.color,
+  }) : super(key: key);
 
   @override
   State<AddAssignment> createState() => _AddAssignmentState();
@@ -33,7 +37,7 @@ class _AddAssignmentState extends State<AddAssignment> {
   void _openFilePicker() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx'], // Add more extensions if needed
+      allowedExtensions: ['pdf', 'doc', 'docx'],
     );
 
     if (result != null) {
@@ -49,86 +53,105 @@ class _AddAssignmentState extends State<AddAssignment> {
     });
   }
 
-  void _addAssignment() async {
-    // Validate input fields (you can add more validation logic as needed)
-    if (title.text.isEmpty || date.text.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("Validation Error"),
-          content: Text("Please enter title and due date."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text("OK"),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
-
-    // Add assignment to Firestore and upload file to Firebase Storage
-    try {
-      // Upload file to Firebase Storage
-      String? fileUrl;
-      if (selectedFilePath != null) {
-        File file = File(selectedFilePath!);
-        final path = 'assignments/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
-        final ref = FirebaseStorage.instance.ref().child(path);
-        await ref.putFile(file);
-        fileUrl = await ref.getDownloadURL();
-      }
-
-      // Add assignment details to Firestore
-      await FirebaseFirestore.instance.collection('Assignement').add({
-        'idclass': widget.idclass, // Replace with actual class ID
-        'idmodule': widget.idmodule, // Replace with actual module ID
-        'idprof': widget.idprof, // Replace with actual professor ID
-        'title': title.text,
-        'date': date.text,
-        'link': link.text,
-        'fileUrl': fileUrl,
-      });
-
-      // Clear input fields and reset state
-      setState(() {
-        title.clear();
-        date.clear();
-        link.clear();
-        selectedFilePath = null;
-        showAttachField = false;
-        showLinkField = false;
-      });
-
-      // Show success message or navigate to a success screen
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Assignment added successfully!"),
-        ),
-      );
-    } catch (e) {
-      // Handle errors, e.g., Firebase exceptions
-      print("Error adding assignment: $e");
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("Error"),
-          content: Text("An error occurred. Please try again later."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text("OK"),
-            ),
-          ],
-        ),
-      );
-    }
+void _addAssignment() async {
+  // Validate input fields
+  if (title.text.isEmpty || date.text.isEmpty) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Validation Error"),
+        content: Text("Please enter title and due date."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("OK"),
+          ),
+        ],
+      ),
+    );
+    return;
   }
+
+  try {
+    String? fileUrl;
+    String? filename;
+
+    if (selectedFilePath != null) {
+      File file = File(selectedFilePath!);
+      final path =
+          'assignments/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
+      final ref = FirebaseStorage.instance.ref().child(path);
+      await ref.putFile(file);
+      fileUrl = await ref.getDownloadURL();
+      filename = selectedFilePath!.split('/').last;
+    }
+
+    DateTime now = DateTime.now();
+    String formattedDate =
+        DateFormat('yyyy-MM-dd').format(now); // Fixed the format
+
+    // Add assignment details to Firestore
+    await FirebaseFirestore.instance.collection('Assignement').add({
+      'idclass': widget.idclass,
+      'idmodule': widget.idmodule,
+      'idprof': widget.idprof,
+      'title': title.text,
+      'duedate': date.text,
+      'createdAt': formattedDate,
+      'link': showLinkField ? link.text : null,
+      'fileUrl': fileUrl,
+      'filename': filename,
+    });
+
+    // Clear input fields
+    title.clear();
+    date.clear();
+    link.clear();
+    selectedFilePath = null;
+    showAttachField = false;
+    showLinkField = false;
+
+    // Show success dialog
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.rightSlide,
+      title: 'Success',
+      desc: 'Assignment successfully Added.',
+      btnOkOnPress: () {
+        Navigator.pop(context, true); // Pop the page
+      },
+    ).show();
+  } catch (e) {
+    print("Error adding assignment: $e");
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Error"),
+        content: Text("An error occurred. Please try again later."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Assignement",
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        backgroundColor: widget.color,
+      ),
       body: Container(
         width: double.infinity,
         margin: EdgeInsets.all(20),
@@ -199,7 +222,6 @@ class _AddAssignmentState extends State<AddAssignment> {
                           setState(() {
                             showAttachField = value;
                             if (!value) {
-                              // Clear file selection if switching off
                               _clearFile();
                             }
                           });

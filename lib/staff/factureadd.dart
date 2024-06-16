@@ -1,0 +1,213 @@
+import 'dart:async';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:edupinacle/mywidgets/textfield.dart';
+import 'package:edupinacle/staff/colors.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+
+class Addfacture extends StatefulWidget {
+  const Addfacture({super.key});
+  @override
+  State<Addfacture> createState() => _AddfactureState();
+}
+
+Future<bool> checkDocumentExists(String documentId) async {
+  // Get a reference to the document
+  DocumentReference docRef =
+      FirebaseFirestore.instance.collection('facture').doc(documentId);
+
+  // Get the document
+  DocumentSnapshot docSnapshot = await docRef.get();
+
+  if (docSnapshot.exists) {
+    return true;
+    // Document exists, you can access its data using docSnapshot.data()
+  } else {
+    return false;
+  }
+}
+
+class _AddfactureState extends State<Addfacture> {
+  Color primaryColor = AppColors.primaryColor;
+
+  bool isLoaded = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer(); // Start the timer when the widget is initialized
+  }
+
+  void _startTimer() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      // Refresh the colors every 5 seconds
+      print("Timer triggered. Refreshing colors...");
+      _initializeColors();
+    });
+  }
+
+  Future<void> _initializeColors() async {
+    await AppColors.initialize();
+    setState(() {
+      primaryColor = AppColors.primaryColor;
+
+      isLoaded = false;
+    });
+  }
+
+  TextEditingController number = TextEditingController();
+  TextEditingController title = TextEditingController();
+  TextEditingController owner = TextEditingController();
+  TextEditingController id = TextEditingController();
+  GlobalKey<FormState> k = GlobalKey();
+  void Addfacture(String id, int num, String own, String titl) async {
+    
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Facture",
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        backgroundColor: AppColors.primaryColor,
+      ),
+      body: Form(
+        key: k,
+        child: Container(
+          width: double.infinity,
+          margin: const EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Add Invoice",
+                  style: TextStyle(
+                      color: Colors.grey[900],
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(
+                  height: 80,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Invoice id :",
+                      style: TextStyle(
+                          color: Colors.grey[900],
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 20),
+                    Myinput(
+                        label: 'Set id',
+                        type: TextInputType.text,
+                        obscure: false,
+                        mycontrol: id),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      "Invoice Title :",
+                      style: TextStyle(
+                          color: Colors.grey[900],
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 20),
+                    Myinput(
+                        label: 'Set Title',
+                        type: TextInputType.text,
+                        obscure: false,
+                        mycontrol: title),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      "Invoice owner :",
+                      style: TextStyle(
+                          color: Colors.grey[900],
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 20),
+                    Myinput(
+                        label: 'Set owner',
+                        type: TextInputType.text,
+                        obscure: false,
+                        mycontrol: owner),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      "Montant  :",
+                      style: TextStyle(
+                          color: Colors.grey[900],
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 20),
+                    Myinput(
+                        label: 'Set Number',
+                        type: TextInputType.number,
+                        obscure: false,
+                        mycontrol: number)
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                    onPressed: () async {
+                      if (k.currentState!.validate()) {
+                        bool exist = await checkDocumentExists(id.text);
+                 if (!exist) {
+      await FirebaseFirestore.instance
+          .collection('facture')
+          .doc(id.text)
+          .set({'id': id.text, 'title': title.text, 'montant':int.parse(number.text), 'owner': owner.text});
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.rightSlide,
+        title: 'Success',
+        desc: 'Invoice added with success !',
+        btnOkOnPress: () {
+          Navigator.pop(context, true);
+        },
+      ).show();
+    } else {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.rightSlide,
+        title: 'ERROR',
+        desc: 'Invoice already exist',
+        btnOkOnPress: () {},
+      ).show();
+    }
+                        id.clear();
+                        number.clear();
+                        title.clear();
+                        owner.clear();
+                      }
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 100),
+                      child: Text("ADD"),
+                    ))
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
