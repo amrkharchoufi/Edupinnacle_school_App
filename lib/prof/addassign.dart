@@ -53,93 +53,115 @@ class _AddAssignmentState extends State<AddAssignment> {
     });
   }
 
-void _addAssignment() async {
-  // Validate input fields
-  if (title.text.isEmpty || date.text.isEmpty) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Validation Error"),
-        content: Text("Please enter title and due date."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("OK"),
-          ),
-        ],
-      ),
-    );
-    return;
-  }
-
-  try {
-    String? fileUrl;
-    String? filename;
-
-    if (selectedFilePath != null) {
-      File file = File(selectedFilePath!);
-      final path =
-          'assignments/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
-      final ref = FirebaseStorage.instance.ref().child(path);
-      await ref.putFile(file);
-      fileUrl = await ref.getDownloadURL();
-      filename = selectedFilePath!.split('/').last;
+  void _addAssignment() async {
+    if (title.text.isEmpty || date.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Validation Error"),
+          content: Text("Please enter title and due date."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("OK"),
+            ),
+          ],
+        ),
+      );
+      return;
     }
 
-    DateTime now = DateTime.now();
-    String formattedDate =
-        DateFormat('yyyy-MM-dd').format(now); // Fixed the format
+    try {
+      String? fileUrl;
+      String? filename;
 
-    // Add assignment details to Firestore
-    await FirebaseFirestore.instance.collection('Assignement').add({
-      'idclass': widget.idclass,
-      'idmodule': widget.idmodule,
-      'idprof': widget.idprof,
-      'title': title.text,
-      'duedate': date.text,
-      'createdAt': formattedDate,
-      'link': showLinkField ? link.text : null,
-      'fileUrl': fileUrl,
-      'filename': filename,
-    });
+      if (selectedFilePath != null) {
+        File file = File(selectedFilePath!);
+        final path =
+            'assignments/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
+        final ref = FirebaseStorage.instance.ref().child(path);
+        await ref.putFile(file);
+        fileUrl = await ref.getDownloadURL();
+        filename = selectedFilePath!.split('/').last;
+      }
 
-    // Clear input fields
-    title.clear();
-    date.clear();
-    link.clear();
-    selectedFilePath = null;
-    showAttachField = false;
-    showLinkField = false;
+      DateTime now = DateTime.now();
+      String formattedDate =
+          DateFormat('yyyy-MM-dd').format(now); // Fixed the format
 
-    // Show success dialog
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.success,
-      animType: AnimType.rightSlide,
-      title: 'Success',
-      desc: 'Assignment successfully Added.',
-      btnOkOnPress: () {
-        Navigator.pop(context, true); // Pop the page
-      },
-    ).show();
-  } catch (e) {
-    print("Error adding assignment: $e");
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Error"),
-        content: Text("An error occurred. Please try again later."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("OK"),
-          ),
-        ],
-      ),
-    );
+      // Add assignment details to Firestore
+      await FirebaseFirestore.instance.collection('Assignement').add({
+        'idclass': widget.idclass,
+        'idmodule': widget.idmodule,
+        'idprof': widget.idprof,
+        'title': title.text,
+        'duedate': date.text,
+        'createdAt': formattedDate,
+        'link': showLinkField ? link.text : null,
+        'fileUrl': fileUrl,
+        'filename': filename,
+      });
+
+      QuerySnapshot query = await FirebaseFirestore.instance
+          .collection('etudiant')
+          .where('class', isEqualTo: widget.idclass)
+          .get();
+
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      for (var doc in query.docs) {
+        Map<String, dynamic> newModuleData = {
+          'idclass':widget.idclass,
+          'idetudiant': doc.id,
+          'idmodule': widget.idmodule,
+          'status' : false,
+          'filename' : '',
+          'fileurl' : ''
+        };
+        DocumentReference newDocRef = FirebaseFirestore.instance
+            .collection('etudiant_assign')
+            .doc();
+        batch.set(newDocRef, newModuleData);
+      }
+
+      await batch.commit();
+
+      // Clear input fields
+      title.clear();
+      date.clear();
+      link.clear();
+      selectedFilePath = null;
+      showAttachField = false;
+      showLinkField = false;
+
+      // Show success dialog
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.rightSlide,
+        title: 'Success',
+        desc: 'Assignment successfully Added.',
+        btnOkOnPress: () {
+          Navigator.pop(context, true); // Pop the page
+        },
+      ).show();
+    } catch (e) {
+      print("Error adding assignment: $e");
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Error"),
+          content: Text("An error occurred. Please try again later."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("OK"),
+            ),
+          ],
+        ),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {

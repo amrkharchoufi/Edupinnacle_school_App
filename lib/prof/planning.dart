@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:edupinacle/staff/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -13,13 +14,19 @@ class PRPlanning extends StatefulWidget {
 class _PRPlanningState extends State<PRPlanning> {
   Color primaryColor = AppColors.primaryColor;
   bool isLoaded = false;
-  late Map<String, List<Map<String, String>>> schedule;
+  Map<String, List<Map<String, String>>> schedule = {};
 
   @override
   void initState() {
     super.initState();
-    _startTimer();
+    _initialize();
   }
+
+  Future<void> _initialize() async {
+    _startTimer();
+    await _initializeSchedule();
+  }
+
 
   void _startTimer() {
     Timer.periodic(Duration(seconds: 5), (timer) {
@@ -30,15 +37,18 @@ class _PRPlanningState extends State<PRPlanning> {
 
   Future<void> _initializeSchedule() async {
     try {
+      
+
       DocumentSnapshot doc = await FirebaseFirestore.instance
           .collection('schedule')
-          .doc('A01') // Replace with your document ID
+          .doc('A02')
           .get();
 
       if (doc.exists) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        Map<String, dynamic> scheduleData = doc.data() as Map<String, dynamic>;
         Map<String, List<Map<String, String>>> fetchedSchedule = {};
-        data['schedule'].forEach((day, timeSlots) {
+
+        scheduleData['schedule'].forEach((day, timeSlots) {
           List<Map<String, String>> slots = [];
           for (var slot in timeSlots) {
             slots.add({
@@ -51,7 +61,7 @@ class _PRPlanningState extends State<PRPlanning> {
         });
 
         setState(() {
-          schedule = fetchedSchedule;
+          schedule = _sortScheduleByDay(fetchedSchedule);
           isLoaded = true;
         });
       } else {
@@ -67,12 +77,37 @@ class _PRPlanningState extends State<PRPlanning> {
     }
   }
 
+  Map<String, List<Map<String, String>>> _sortScheduleByDay(
+      Map<String, List<Map<String, String>>> unsortedSchedule) {
+    // Define the desired order of days
+    List<String> dayOrder = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
+
+    // Sort the schedule map based on the defined day order
+    Map<String, List<Map<String, String>>> sortedSchedule = {};
+
+    for (var day in dayOrder) {
+      if (unsortedSchedule.containsKey(day)) {
+        sortedSchedule[day] = unsortedSchedule[day]!;
+      }
+    }
+
+    return sortedSchedule;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Planning",
+          "PRPlanning",
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
@@ -110,7 +145,7 @@ class _PRPlanningState extends State<PRPlanning> {
                           String day = schedule.keys.toList()[index];
                           List<Map<String, String>> tasks = schedule[day]!;
 
-                          return PlanningItem(
+                          return PRPlanningItem(
                             day: day,
                             tasks:
                                 tasks.map((task) => task['activity']!).toList(),
@@ -132,12 +167,12 @@ class _PRPlanningState extends State<PRPlanning> {
   }
 }
 
-class PlanningItem extends StatelessWidget {
+class PRPlanningItem extends StatelessWidget {
   final String day;
   final List<String> tasks;
   final List<String> time;
 
-  const PlanningItem({
+  const PRPlanningItem({
     required this.day,
     required this.tasks,
     required this.time,
@@ -169,7 +204,7 @@ class PlanningItem extends StatelessWidget {
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(tasks[index]),
-                  subtitle: Text(time[index]),
+                  leading: Text(time[index],style: TextStyle(fontSize: 15),),
                 );
               },
             ),

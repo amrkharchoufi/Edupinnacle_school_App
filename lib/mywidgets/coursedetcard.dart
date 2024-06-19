@@ -1,31 +1,35 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/staff/colors.dart';
 import 'package:flutter/material.dart';
-class Coursedetcard extends StatefulWidget{
-    final String prof;
+
+class Coursedetcard extends StatefulWidget {
+  final String prof;
   final String message;
   final String date;
   final Widget delete;
   final Widget file;
- const Coursedetcard({
+  const Coursedetcard({
     super.key,
     required this.message,
     required this.prof,
     required this.date,
-    required this.delete, required this.file,
+    required this.delete,
+    required this.file,
   });
- State<Coursedetcard> createState() => _Coursedetcard();
+  State<Coursedetcard> createState() => _Coursedetcard();
 }
 
 class _Coursedetcard extends State<Coursedetcard> {
-     void _startTimer() {
+  void _startTimer() {
     Timer.periodic(Duration(seconds: 1), (timer) {
       // Refresh the colors every 5 seconds
       print("Timer triggered. Refreshing colors...");
       _initializeColors();
     });
   }
+
   Color brightenColor(Color color, double amount) {
     assert(amount >= 0 && amount <= 1);
     HSLColor hslColor = HSLColor.fromColor(color);
@@ -34,6 +38,7 @@ class _Coursedetcard extends State<Coursedetcard> {
     );
     return brighterHslColor.toColor();
   }
+
   Color primaryColor = AppColors.primaryColor;
 
   bool isLoaded = false;
@@ -46,14 +51,11 @@ class _Coursedetcard extends State<Coursedetcard> {
     });
   }
 
-  
   @override
   void initState() {
     super.initState();
     _startTimer();
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -61,16 +63,16 @@ class _Coursedetcard extends State<Coursedetcard> {
       width: double.infinity,
       child: Card(
           elevation: 5,
-          color: brightenColor(primaryColor,0.5),
+          color: brightenColor(primaryColor, 0.5),
           shape: RoundedRectangleBorder(
             side: BorderSide.none,
           ),
           child: Container(
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(color:   primaryColor, width: 2), // Top border
+                top: BorderSide(color: primaryColor, width: 2), // Top border
                 bottom:
-                    BorderSide(color:   primaryColor, width: 2), // Bottom border
+                    BorderSide(color: primaryColor, width: 2), // Bottom border
               ),
             ),
             child: Padding(
@@ -105,7 +107,7 @@ class _Coursedetcard extends State<Coursedetcard> {
                                     ),
                                   ),
                                   Text(
-                                  widget.date,
+                                    widget.date,
                                     style: TextStyle(
                                       color: Colors.grey[900], // Text color
                                       fontSize: 12.0, // Font size
@@ -134,22 +136,71 @@ class _Coursedetcard extends State<Coursedetcard> {
                       ),
                       widget.file
                     ])),
-
           )),
     );
   }
 }
 
-class Coursedetcard1 extends StatelessWidget {
+class Coursedetcard1 extends StatefulWidget {
   final String prof;
   final String message;
   final String date;
+  final Widget file;
   const Coursedetcard1({
     super.key,
     required this.message,
     required this.prof,
     required this.date,
+    required this.file,
   });
+  State<Coursedetcard1> createState() => _Coursedetcard1();
+}
+
+class _Coursedetcard1 extends State<Coursedetcard1> {
+  void _startTimer() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      _initializeColors();
+    });
+  }
+
+  Color brightenColor(Color color, double amount) {
+    assert(amount >= 0 && amount <= 1);
+    HSLColor hslColor = HSLColor.fromColor(color);
+    HSLColor brighterHslColor = hslColor.withLightness(
+      (hslColor.lightness + amount).clamp(0.0, 1.0),
+    );
+    return brighterHslColor.toColor();
+  }
+
+  Color primaryColor = AppColors.primaryColor;
+
+  bool isLoaded = false;
+  Future<void> _initializeColors() async {
+    await AppColors.initialize();
+    setState(() {
+      primaryColor = AppColors.primaryColor;
+
+      isLoaded = true;
+    });
+  }
+
+  var nom = '';
+  void getdata() async {
+    DocumentSnapshot admin = await FirebaseFirestore.instance
+        .collection('Professeur')
+        .doc(widget.prof)
+        .get();
+    setState(() {
+      nom = "${admin.get('nom')} ${admin.get('prenom')}";
+    });
+  }
+
+  @override
+  void initState() {
+    getdata();
+    super.initState();
+    _startTimer();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,16 +208,16 @@ class Coursedetcard1 extends StatelessWidget {
       width: double.infinity,
       child: Card(
           elevation: 5,
-          color: const Color.fromARGB(255, 244, 218, 248),
+          color: brightenColor(primaryColor, 0.5),
           shape: RoundedRectangleBorder(
             side: BorderSide.none,
           ),
           child: Container(
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(color: Colors.purple, width: 2), // Top border
+                top: BorderSide(color: primaryColor, width: 2), // Top border
                 bottom:
-                    BorderSide(color: Colors.purple, width: 2), // Bottom border
+                    BorderSide(color: primaryColor, width: 2), // Bottom border
               ),
             ),
             child: Padding(
@@ -175,7 +226,6 @@ class Coursedetcard1 extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const CircleAvatar(
                             radius: 20,
@@ -189,15 +239,15 @@ class Coursedetcard1 extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                prof,
+                                nom,
                                 style: TextStyle(
-                                  color: Colors.grey[900], // Text color
-                                  fontSize: 16.0, // Font size
-                                  fontWeight: FontWeight.bold, // Text weight
+                                  color: Colors.grey[900],
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                date,
+                                widget.date,
                                 style: TextStyle(
                                   color: Colors.grey[900], // Text color
                                   fontSize: 12.0, // Font size
@@ -205,22 +255,23 @@ class Coursedetcard1 extends StatelessWidget {
                                 ),
                               ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                       const SizedBox(
                         height: 15,
                       ),
                       Text(
-                        message,
+                        widget.message,
                         style: TextStyle(
                             color: Colors.grey[900],
                             fontFamily: "myfont",
                             fontSize: 15),
                       ),
                       const SizedBox(
-                        height: 12,
+                        height: 20,
                       ),
+                      widget.file
                     ])),
           )),
     );

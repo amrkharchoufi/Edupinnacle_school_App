@@ -2,13 +2,14 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:edupinacle/mywidgets/PdfAPI.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edupinacle/mywidgets/asscar.dart';
+import 'package:edupinacle/mywidgets/card.dart';
 import 'package:edupinacle/mywidgets/coursedetcard.dart';
-import 'package:edupinacle/mywidgets/pdfpage.dart';
+import 'package:edupinacle/mywidgets/pdf.dart';
 import 'package:edupinacle/mywidgets/textfield.dart';
 import 'package:edupinacle/prof/addassign.dart';
+import 'package:edupinacle/prof/detassign.dart';
 import 'package:edupinacle/staff/colors.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -33,9 +34,7 @@ class _PRCoursesState extends State<PRCoursesdet> {
   int _currentIndex = 0;
   List<Widget> _pages = [];
   void _startTimer() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      // Refresh the colors every 5 seconds
-      print("Timer triggered. Refreshing colors...");
+    Timer.periodic(Duration(seconds: 5), (timer) {
       _initializeColors();
     });
   }
@@ -153,10 +152,6 @@ class _FeedState extends State<Feed> {
   List<Coursedetcard> cards = [];
   final TextEditingController _text = TextEditingController();
 
-  void openPDF(BuildContext context, File file) => Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => PDFViewerPage(file: file)),
-      );
-
   Future<void> deleteMessage(
       String timestamp, String msg, String fileurl) async {
     // Query Firestore to get the document containing the feed
@@ -167,7 +162,6 @@ class _FeedState extends State<Feed> {
         .where('IDmodule', isEqualTo: widget.idmodule)
         .get();
 
-    // Check if the query result is not empty
     if (query.docs.isNotEmpty) {
       // Get the first document from the query result
       DocumentSnapshot doc = query.docs.first;
@@ -186,13 +180,10 @@ class _FeedState extends State<Feed> {
           .update({'Feed': feed});
 
       // Delete file from Firebase Storage
-      await FirebaseStorage.instance.ref().child(fileurl).delete();
-
-      // Update local state to remove the deleted card
-      setState(() {
-        cards.removeWhere(
-            (card) => card.date == timestamp && card.message == msg);
-      });
+      await FirebaseStorage.instance.ref().child(fileurl).delete;
+      cards
+          .removeWhere((card) => card.date == timestamp && card.message == msg);
+      getdata();
     } else {
       // Handle the case where no documents match the query criteria
       print('No document found for the given criteria.');
@@ -228,10 +219,13 @@ class _FeedState extends State<Feed> {
                     width: 10,
                   )
                 : GestureDetector(
-                    onTap: () async {
-                      final file = await PDFApi.loadFirebase(fileurl);
-                      if (file == null) return;
-                      openPDF(context, file);
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PDFViewerPage(pdfUrl: fileurl),
+                        ),
+                      );
                     },
                     child: Center(
                       child: Container(
@@ -878,7 +872,15 @@ class _AssignementState extends State<Assignement> {
                     lastdate: data[i]['duedate'].toString(),
                     link: data[i]['link'],
                     filename: data[i]['filename'],
-                    
+                    vue: () async {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              Detassign(idmodule: '', idclass: '', couleur: widget.color,),
+                        ),
+                      );
+                    },
                     delete: () async {
                       AwesomeDialog(
                         context: context,
