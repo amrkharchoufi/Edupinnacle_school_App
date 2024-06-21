@@ -77,7 +77,7 @@ class _LoginState extends State<Login> {
                         SizedBox(
                           height: 40,
                         ),
-                        Myinput(
+                        MyinputS(
                           label: "Email",
                           preficon: Icon(
                             Icons.mail,
@@ -90,7 +90,7 @@ class _LoginState extends State<Login> {
                         SizedBox(
                           height: 10,
                         ),
-                        Myinput(
+                        MyinputS(
                           label: "Password",
                           preficon: Icon(
                             Icons.lock,

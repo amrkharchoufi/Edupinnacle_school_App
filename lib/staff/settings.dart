@@ -19,7 +19,7 @@ class _SettingsState extends State<Settings> {
     FirebaseFirestore.instance.collection('App').doc('myapp').update({
       'inscription': newValue
           ? 'true'
-          : 'false', // Convert bool to string 'true' or 'false'
+          : 'false', 
     }).then((_) {
       // Update local state after successful update
       setState(() {

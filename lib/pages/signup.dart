@@ -91,7 +91,7 @@ class _SignupState extends State<Signup> {
                         SizedBox(
                           height: 40,
                         ),
-                        Myinput(
+                        MyinputS(
                           label: "Name",
                           preficon: Icon(
                             Icons.person,
@@ -103,7 +103,7 @@ class _SignupState extends State<Signup> {
                         SizedBox(
                           height: 10,
                         ),
-                        Myinput(
+                        MyinputS(
                           label: "CNE",
                           preficon: Icon(
                             Icons.view_comfortable_outlined,
@@ -115,7 +115,7 @@ class _SignupState extends State<Signup> {
                         SizedBox(
                           height: 10,
                         ),
-                        Myinput(
+                        MyinputS(
                           label: "Email",
                           preficon: Icon(
                             Icons.mail,
